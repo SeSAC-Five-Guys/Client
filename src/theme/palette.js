@@ -79,8 +79,8 @@ export const common = {
 export const action = {
   hover: alpha(grey[500], 0.08),
   selected: alpha(grey[500], 0.16),
-  disabled: alpha(grey[500], 0.8),
-  disabledBackground: alpha(grey[500], 0.24),
+  disabled: alpha(grey[200], 0.8),
+  disabledBackground: alpha(grey[800], 0.24),
   focus: alpha(grey[500], 0.24),
   hoverOpacity: 0.08,
   disabledOpacity: 0.48,
@@ -108,7 +108,7 @@ export function palette() {
     text: {
       primary: grey[800],
       secondary: grey[600],
-      disabled: grey[500],
+      disabled: grey[400],
     },
     background: {
       paper: '#FFFFFF',

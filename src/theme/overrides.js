@@ -68,7 +68,7 @@ export function overrides(theme) {
           },
         },
         sizeLarge: {
-          minHeight: 48,
+          minHeight: 56,
         },
       },
     },
