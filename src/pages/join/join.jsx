@@ -20,17 +20,22 @@ export default function Join() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // 유효성 검사
   const [isNameValid, setNameValid] = useState(false);
   const [isPhoneValid, setPhoneValid] = useState(false);
   const [isEmailValid, setEmailValid] = useState(false);
   const [isPasswordValid, setPasswordValid] = useState(false);
+  const [isConfirmPasswordValid, setConfirmPasswordValid] = useState(false);
 
   // 이벤트
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
@@ -54,6 +59,11 @@ export default function Join() {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
     setPasswordValid(event.target.value.length >= 8);
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
+    setConfirmPasswordValid(event.target.value === password);
   };
 
   const handleSubmit = (event) => {
@@ -146,7 +156,29 @@ export default function Join() {
           }}
         />
 
-        {/* 비밀번호 확인 */}
+        <TextField
+          name="confirmPassword"
+          label="비밀번호 확인"
+          type={showConfirmPassword ? 'text' : 'password'}
+          value={confirmPassword}
+          onChange={handleConfirmPasswordChange}
+          error={!isConfirmPasswordValid && confirmPassword !== ""}
+          helperText={!isConfirmPasswordValid && confirmPassword !== "" ? '입력한 값과 비밀번호가 다릅니다.' : ''}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowConfirmPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
       </Stack>
 
       <Button
@@ -155,7 +187,7 @@ export default function Join() {
         type="submit"
         variant="contained"
         color="inherit"
-        disabled={!isNameValid || !isPhoneValid || !isEmailValid || !isPasswordValid}
+        disabled={!isNameValid || !isPhoneValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid}
       >
         회원가입
       </Button>
