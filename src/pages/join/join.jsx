@@ -15,15 +15,14 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function Join() {
-  // 이름, 전화번호, 이메일, 이메일인증, 비밀번호, 비밀번호확인
-  const [name, setName] = useState("");
+  // 닉네임, 전화번호, 이메일, 이메일인증, 비밀번호, 비밀번호확인
+  const [nickname, setNickname] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // 유효성 검사
-  const [isNameValid, setNameValid] = useState(false);
   const [isPhoneValid, setPhoneValid] = useState(false);
   const [isEmailValid, setEmailValid] = useState(false);
   const [isPasswordValid, setPasswordValid] = useState(false);
@@ -41,9 +40,8 @@ export default function Join() {
     event.preventDefault();
   };
 
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-    setNameValid(/^[가-힣]{2,5}$/.test(event.target.value));
+  const handleNicknameChange = (event) => {
+    setNickname(event.target.value);
   };
 
   const handlePhoneChange = (event) => {
@@ -70,7 +68,7 @@ export default function Join() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      name: data.get('name'),
+      nickname: data.get('nickname'),
       phone: data.get('phone'),
       email: data.get('email'),
       password: data.get('password'),
@@ -83,16 +81,31 @@ export default function Join() {
       onSubmit={handleSubmit}
       noValidate
     >
-      <Stack spacing={3} sx={{ my: 3 }}>
-        <TextField
-          name="name"
-          label="이름"
-          value={name}
-          onChange={handleNameChange}
-          error={!isNameValid && name !== ""}
-          helperText={!isNameValid && name !== "" ? '2~5자의 한글을 입력하세요.' : ''}
-        />
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <TextField
+            fullWidth
+            name="nickname"
+            label="닉네임"
+            value={nickname}
+            onChange={handleNicknameChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <Button
+            fullWidth
+            size="large"
+            type="submit"
+            variant="contained"
+            color="inherit"
+            disabled={nickname === ''}
+          >
+            중복 확인
+          </Button>
+        </Grid>
+      </Grid>
 
+      <Stack spacing={3} sx={{ my: 3 }}>
         <TextField
           name="phone"
           label="전화번호"
@@ -104,7 +117,7 @@ export default function Join() {
       </Stack>
 
       <Grid container spacing={2}>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           <TextField
             fullWidth
             name="email"
@@ -115,7 +128,7 @@ export default function Join() {
             helperText={!isEmailValid && email !== "" ? '유효한 이메일을 입력하세요.' : ''}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Button
             fullWidth
             size="large"
@@ -187,7 +200,7 @@ export default function Join() {
         type="submit"
         variant="contained"
         color="inherit"
-        disabled={!isNameValid || !isPhoneValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid}
+        disabled={nickname === '' || !isPhoneValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid}
       >
         회원가입
       </Button>
