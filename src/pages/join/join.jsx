@@ -177,6 +177,7 @@ export default function Join() {
           onChange={handleConfirmPasswordChange}
           error={!isConfirmPasswordValid && confirmPassword !== ""}
           helperText={!isConfirmPasswordValid && confirmPassword !== "" ? '입력한 값과 비밀번호가 다릅니다.' : ''}
+          disabled={!isPasswordValid || password === ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -185,6 +186,7 @@ export default function Join() {
                   onClick={handleClickShowConfirmPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
+                  disabled={!isPasswordValid || password === ''}
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
