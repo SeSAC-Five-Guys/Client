@@ -64,6 +64,28 @@ export default function Join() {
     setConfirmPasswordValid(event.target.value === password);
   };
 
+  const checkDuplicate = async (value) => {
+    console.log(value);
+  };
+
+  // const checkDuplicate = async (type, value, api) => {
+  //   try {
+  //     const res = await axios.post(
+  //       api,
+  //       { [type]: value },
+  //       { headers: { 'Content-Type': 'application/json' } }
+  //     );
+
+  //     if (res.data.isDuplicated) {
+  //       alert(`이미 사용 중인 ${type}입니다.`);
+  //     } else {
+  //       alert(`사용 가능한 ${type}입니다.`);
+  //     }
+  //   } catch (error) {
+  //     console.error(`${type} 중복 확인 중 에러가 발생했습니다: `, error);
+  //   }
+  // };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -81,7 +103,7 @@ export default function Join() {
       onSubmit={handleSubmit}
       noValidate
     >
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
             fullWidth
@@ -95,28 +117,43 @@ export default function Join() {
           <Button
             fullWidth
             size="large"
-            type="submit"
             variant="contained"
             color="inherit"
             disabled={nickname === ''}
+            onClick={() => checkDuplicate(nickname)}
           >
-            중복 확인
+            중복확인
           </Button>
         </Grid>
       </Grid>
 
-      <Stack spacing={3} sx={{ my: 3 }}>
-        <TextField
-          name="phone"
-          label="전화번호"
-          value={phone}
-          onChange={handlePhoneChange}
-          error={!isPhoneValid && phone !== ""}
-          helperText={!isPhoneValid && phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
-        />
-      </Stack>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={8}>
+          <TextField
+            fullWidth
+            name="phone"
+            label="전화번호"
+            value={phone}
+            onChange={handlePhoneChange}
+            error={!isPhoneValid && phone !== ""}
+            helperText={!isPhoneValid && phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <Button
+            fullWidth
+            size="large"
+            variant="contained"
+            color="inherit"
+            disabled={!isPhoneValid}
+            onClick={() => checkDuplicate(phone)}
+          >
+            중복확인
+          </Button>
+        </Grid>
+      </Grid>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
             fullWidth
@@ -132,12 +169,12 @@ export default function Join() {
           <Button
             fullWidth
             size="large"
-            type="submit"
             variant="contained"
             color="inherit"
             disabled={!isEmailValid}
+            onClick={() => checkDuplicate(email)}
           >
-            인증
+            중복확인
           </Button>
         </Grid>
       </Grid>
