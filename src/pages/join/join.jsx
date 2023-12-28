@@ -6,6 +6,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -31,6 +32,7 @@ export default function Join() {
   // 이벤트
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showTooltip, setTooltip] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -45,8 +47,15 @@ export default function Join() {
   };
 
   const handlePhoneChange = (event) => {
-    setPhone(event.target.value);
-    setPhoneValid(/^010\d{7,8}$/.test(event.target.value));
+    let input = event.target.value;
+    if (input.includes('-')) {
+      setTooltip(true);
+      input = input.replace(/-/g, '');
+    } else {
+      setTooltip(false);
+    }
+    setPhone(input);
+    setPhoneValid(/^010\d{7,8}$/.test(input));
   };
 
   const handleEmailChange = (event) => {
@@ -103,7 +112,7 @@ export default function Join() {
       onSubmit={handleSubmit}
       noValidate
     >
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
             fullWidth
@@ -127,17 +136,19 @@ export default function Join() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
-          <TextField
-            fullWidth
-            name="phone"
-            label="전화번호"
-            value={phone}
-            onChange={handlePhoneChange}
-            error={!isPhoneValid && phone !== ""}
-            helperText={!isPhoneValid && phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
-          />
+          <Tooltip title="전화번호에 '-'를 포함하지 마세요." open={showTooltip} placement="top" arrow>
+            <TextField
+              fullWidth
+              name="phone"
+              label="전화번호"
+              value={phone}
+              onChange={handlePhoneChange}
+              error={!isPhoneValid && phone !== ""}
+              helperText={!isPhoneValid && phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
+            />
+          </Tooltip>
         </Grid>
         <Grid item xs={4}>
           <Button
@@ -153,7 +164,7 @@ export default function Join() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
             fullWidth
