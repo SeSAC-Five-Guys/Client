@@ -15,6 +15,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import FormDialog from '../../components/formDialogs';
+
 export default function Join() {
   // 닉네임, 전화번호, 이메일, 이메일인증, 비밀번호, 비밀번호확인
   const [nickname, setNickname] = useState("");
@@ -77,10 +79,10 @@ export default function Join() {
     console.log(value);
   };
 
-  // const checkDuplicate = async (type, value, api) => {
+  // const checkDuplicate = async (type, value) => {
   //   try {
   //     const res = await axios.post(
-  //       api,
+  //       // api,
   //       { [type]: value },
   //       { headers: { 'Content-Type': 'application/json' } }
   //     );
@@ -92,6 +94,55 @@ export default function Join() {
   //     }
   //   } catch (error) {
   //     console.error(`${type} 중복 확인 중 에러가 발생했습니다: `, error);
+  //   }
+  // };
+
+  const sendEmailVerification = async (email) => {
+    // 중복확인
+    checkDuplicate(email);
+
+    // 인증번호 입력
+    const verificationCode = prompt("인증 번호를 입력하세요.");
+    verifyEmailCode(email, verificationCode);
+  };
+
+  const verifyEmailCode = async (email, code) => {
+    console.log(code);
+  };
+
+  // const sendEmailVerification = async (email) => {
+  // 변경상태 X인지 확인 & 이메일 중복확인 success인지 확인
+  //   try {
+  //     const res = await axios.post(
+  //       // api,
+  //       { email: email },
+  //       { headers: { 'Content-Type': 'application/json' } }
+  //     );
+
+  //     if (res.data.success) {
+  //       const verificationCode = prompt("인증 번호를 입력하세요.");
+  //       verifyEmailCode(email, verificationCode);
+  //     }
+  //   } catch (error) {
+  //     console.error(`이메일 인증 번호 전송 중 에러가 발생했습니다: `, error);
+  //   }
+  // };
+
+  // const verifyEmailCode = async (email, code) => {
+  //   try {
+  //     const res = await axios.post(
+  //       // api,
+  //       { email: email, code: code },
+  //       { headers: { 'Content-Type': 'application/json' } }
+  //     );
+
+  //     if (res.data.success) {
+  //       alert("이메일이 성공적으로 인증되었습니다.");
+  //     } else {
+  //       alert("인증 번호가 일치하지 않습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.error(`이메일 인증 중 에러가 발생했습니다: `, error);
   //   }
   // };
 
@@ -183,16 +234,14 @@ export default function Join() {
             variant="contained"
             color="inherit"
             disabled={!isEmailValid}
-            onClick={() => checkDuplicate(email)}
+            onClick={() => sendEmailVerification(email)}
           >
-            중복확인
+            인증
           </Button>
         </Grid>
       </Grid>
 
       <Stack spacing={3} sx={{ my: 3 }}>
-        {/* 이메일 인증 */}
-
         <TextField
           name="password"
           label="비밀번호"
