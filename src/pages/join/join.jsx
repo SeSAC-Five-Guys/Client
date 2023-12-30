@@ -15,7 +15,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import FormDialog from '../../components/formDialogs';
+import FormDialog from '../../components/formDialog';
 
 export default function Join() {
   // 닉네임, 전화번호, 이메일, 이메일인증, 비밀번호, 비밀번호확인
