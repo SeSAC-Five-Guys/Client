@@ -11,7 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
-import { emailState, isEmailValidState, showEmailState } from '../../recoil/atoms';
+import { userInfoState, isValidState, showEmailState } from '../../recoil/atoms';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -21,8 +21,8 @@ export default function FormDialog() {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [showEmail, setShowEmail] = useRecoilState(showEmailState);
-  const email = useRecoilValue(emailState);
-  const isEmailValid = useRecoilValue(isEmailValidState);
+  const userInfo = useRecoilValue(userInfoState);
+  const isValid = useRecoilValue(isValidState);
 
   const handleDialogOpen = () => setOpen(true);
   const handleDialogClose = () => setOpen(false);
@@ -87,8 +87,8 @@ export default function FormDialog() {
         size="large"
         variant="contained"
         color="inherit"
-        disabled={!isEmailValid || !showEmail}
-        onClick={() => sendEmailVerification(email)}>
+        disabled={!isValid.email || !showEmail}
+        onClick={() => sendEmailVerification(userInfo.email)}>
         인증
       </Button>
       <Dialog
@@ -112,7 +112,7 @@ export default function FormDialog() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDialogClose}>취소</Button>
-            <Button onClick={() => verifyEmailCode(email, code)}>확인</Button>
+            <Button onClick={() => verifyEmailCode(userInfo.email, code)}>확인</Button>
           </DialogActions>
         </Box>
       </Dialog >

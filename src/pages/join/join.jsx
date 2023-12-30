@@ -16,21 +16,16 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { emailState, isEmailValidState, showEmailState } from '../../recoil/atoms';
+import { userInfoState, isValidState, showEmailState } from '../../recoil/atoms';
 import FormDialog from '../../components/formDialog';
 
 export default function Join() {
-  // 닉네임, 전화번호, 이메일, 이메일인증, 비밀번호, 비밀번호확인
-  const [nickname, setNickname] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useRecoilState(emailState);
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  // 닉네임, 전화번호, 이메일, 비밀번호
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // 유효성 검사
-  const [isPhoneValid, setPhoneValid] = useState(false);
-  const [isEmailValid, setEmailValid] = useRecoilState(isEmailValidState);
-  const [isPasswordValid, setPasswordValid] = useState(false);
+  const [isValid, setIsValid] = useRecoilState(isValidState);
   const [isConfirmPasswordValid, setConfirmPasswordValid] = useState(false);
 
   // 이벤트
@@ -47,7 +42,8 @@ export default function Join() {
   };
 
   const handleNicknameChange = (event) => {
-    setNickname(event.target.value);
+    let newNickname = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, nickname: newNickname }));
   };
 
   const handlePhoneChange = (event) => {
@@ -58,23 +54,26 @@ export default function Join() {
     } else {
       setShowTooltip(false);
     }
-    setPhone(input);
-    setPhoneValid(/^010\d{7,8}$/.test(input));
+    setUserInfo((userInfo) => ({ ...userInfo, phone: input }));
+    setIsValid((isValid) => ({ ...isValid, phone: /^010\d{7,8}$/.test(input) }));
   };
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    setEmailValid(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(event.target.value));
+    let newEmail = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
+    setIsValid((isValid) => ({ ...isValid, email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail) }));
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    setPasswordValid(event.target.value.length >= 8);
+    let newPassword = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
+    setIsValid((isValid) => ({ ...isValid, password: newPassword.length >= 8 }));
   };
 
   const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-    setConfirmPasswordValid(event.target.value === password);
+    let newConfirmPassword = event.target.value;
+    setConfirmPassword(newConfirmPassword);
+    setConfirmPasswordValid(newConfirmPassword === userInfo.password);
   };
 
   const checkDuplicate = async (value) => {
@@ -101,28 +100,18 @@ export default function Join() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      nickname: data.get('nickname'),
-      phone: data.get('phone'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    console.log(userInfo);
+    // 서버 전송
   };
 
   const renderForm = (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      noValidate
-    >
+    <Box>
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
             fullWidth
             name="nickname"
             label="닉네임"
-            value={nickname}
             onChange={handleNicknameChange}
           />
         </Grid>
@@ -132,8 +121,8 @@ export default function Join() {
             size="large"
             variant="contained"
             color="inherit"
-            disabled={nickname === ''}
-            onClick={() => checkDuplicate(nickname)}
+            disabled={userInfo.nickname === ''}
+            onClick={() => checkDuplicate(userInfo.nickname)}
           >
             중복확인
           </Button>
@@ -147,10 +136,9 @@ export default function Join() {
               fullWidth
               name="phone"
               label="전화번호"
-              value={phone}
               onChange={handlePhoneChange}
-              error={!isPhoneValid && phone !== ""}
-              helperText={!isPhoneValid && phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
+              error={!isValid.phone && userInfo.phone !== ""}
+              helperText={!isValid.phone && userInfo.phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
             />
           </Tooltip>
         </Grid>
@@ -160,8 +148,8 @@ export default function Join() {
             size="large"
             variant="contained"
             color="inherit"
-            disabled={!isPhoneValid}
-            onClick={() => checkDuplicate(phone)}
+            disabled={!isValid.phone}
+            onClick={() => checkDuplicate(userInfo.phone)}
           >
             중복확인
           </Button>
@@ -174,11 +162,10 @@ export default function Join() {
             fullWidth
             name="email"
             label="이메일"
-            value={email}
             disabled={!showEmail}
             onChange={handleEmailChange}
-            error={!isEmailValid && email !== ""}
-            helperText={!isEmailValid && email !== "" ? '유효한 이메일을 입력하세요.' : ''}
+            error={!isValid.email && userInfo.email !== ""}
+            helperText={!isValid.email && userInfo.email !== "" ? '유효한 이메일을 입력하세요.' : ''}
           />
         </Grid>
         <Grid item xs={4}>
@@ -191,15 +178,13 @@ export default function Join() {
           name="password"
           label="비밀번호"
           type={showPassword ? 'text' : 'password'}
-          value={password}
           onChange={handlePasswordChange}
-          error={!isPasswordValid && password !== ""}
-          helperText={!isPasswordValid && password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
+          error={!isValid.password && userInfo.password !== ""}
+          helperText={!isValid.password && userInfo.password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
@@ -219,16 +204,15 @@ export default function Join() {
           onChange={handleConfirmPasswordChange}
           error={!isConfirmPasswordValid && confirmPassword !== ""}
           helperText={!isConfirmPasswordValid && confirmPassword !== "" ? '입력한 값과 비밀번호가 다릅니다.' : ''}
-          disabled={!isPasswordValid || password === ''}
+          disabled={!isValid.password || userInfo.password === ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
                   onClick={handleClickShowConfirmPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
-                  disabled={!isPasswordValid || password === ''}
+                  disabled={!isValid.password || userInfo.password === ''}
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -241,10 +225,10 @@ export default function Join() {
       <Button
         fullWidth
         size="large"
-        type="submit"
         variant="contained"
         color="inherit"
-        disabled={nickname === '' || !isPhoneValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid}
+        disabled={userInfo.nickname === '' || !isValid.phone || !isValid.email || !isValid.password || !isConfirmPasswordValid}
+        onClick={handleSubmit}
       >
         회원가입
       </Button>
@@ -254,13 +238,7 @@ export default function Join() {
   return (
     <Box sx={{ height: 1 }}>
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card
-          sx={{
-            p: 5,
-            width: 1,
-            maxWidth: 420,
-          }}
-        >
+        <Card sx={{ p: 5, width: 1, maxWidth: 420, }}>
           <Typography variant="h4" sx={{ mb: 5 }}>회원가입</Typography>
 
           {renderForm}
@@ -273,7 +251,6 @@ export default function Join() {
               로그인
             </Link>
           </Typography>
-
         </Card>
       </Stack>
     </Box >
