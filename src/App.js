@@ -1,10 +1,14 @@
+import { RecoilRoot } from 'recoil';
+
 import ThemeProvider from './theme';
 import Router from './Router';
 
 export default function App() {
   return (
     <ThemeProvider>
-      <Router />
+      <RecoilRoot>
+        <Router />
+      </RecoilRoot>
     </ThemeProvider>
   );
 }
