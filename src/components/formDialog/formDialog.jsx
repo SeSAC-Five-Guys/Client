@@ -1,5 +1,5 @@
 import { useState, forwardRef } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
@@ -11,7 +11,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
-import { emailState, isEmailValidState } from '../../recoil/atoms';
+import { emailState, isEmailValidState, showEmailState } from '../../recoil/atoms';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -20,6 +20,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 export default function FormDialog() {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
+  const [showEmail, setShowEmail] = useRecoilState(showEmailState);
   const email = useRecoilValue(emailState);
   const isEmailValid = useRecoilValue(isEmailValidState);
 
@@ -41,6 +42,7 @@ export default function FormDialog() {
 
   const verifyEmailCode = async (email, code) => {
     console.log(code);
+    setShowEmail(false);
     handleDialogClose();
   };
 
@@ -53,6 +55,7 @@ export default function FormDialog() {
   //     );
 
   //     if (res.data.success) {
+  //       setShowEmail(false);
   //       handleDialogOpen();
   //     }
   //   } catch (error) {
@@ -84,7 +87,7 @@ export default function FormDialog() {
         size="large"
         variant="contained"
         color="inherit"
-        disabled={!isEmailValid}
+        disabled={!isEmailValid || !showEmail}
         onClick={() => sendEmailVerification(email)}>
         인증
       </Button>

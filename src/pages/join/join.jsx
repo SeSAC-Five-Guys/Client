@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -16,7 +16,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { emailState, isEmailValidState } from '../../recoil/atoms';
+import { emailState, isEmailValidState, showEmailState } from '../../recoil/atoms';
 import FormDialog from '../../components/formDialog';
 
 export default function Join() {
@@ -36,7 +36,8 @@ export default function Join() {
   // 이벤트
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showTooltip, setTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const showEmail = useRecoilValue(showEmailState);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
@@ -52,10 +53,10 @@ export default function Join() {
   const handlePhoneChange = (event) => {
     let input = event.target.value;
     if (input.includes('-')) {
-      setTooltip(true);
+      setShowTooltip(true);
       input = input.replace(/-/g, '');
     } else {
-      setTooltip(false);
+      setShowTooltip(false);
     }
     setPhone(input);
     setPhoneValid(/^010\d{7,8}$/.test(input));
@@ -174,6 +175,7 @@ export default function Join() {
             name="email"
             label="이메일"
             value={email}
+            disabled={!showEmail}
             onChange={handleEmailChange}
             error={!isEmailValid && email !== ""}
             helperText={!isEmailValid && email !== "" ? '유효한 이메일을 입력하세요.' : ''}
