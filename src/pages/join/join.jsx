@@ -47,15 +47,15 @@ export default function Join() {
   };
 
   const handlePhoneChange = (event) => {
-    let input = event.target.value;
-    if (input.includes('-')) {
+    if (event.target.value.includes('-')) {
       setShowTooltip(true);
-      input = input.replace(/-/g, '');
+      event.target.value = event.target.value.replace(/-/g, '');
     } else {
       setShowTooltip(false);
     }
-    setUserInfo((userInfo) => ({ ...userInfo, phone: input }));
-    setIsValid((isValid) => ({ ...isValid, phone: /^010\d{7,8}$/.test(input) }));
+    let newPhone = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, phone: newPhone }));
+    setIsValid((isValid) => ({ ...isValid, phone: /^010\d{7,8}$/.test(newPhone) }));
   };
 
   const handleEmailChange = (event) => {
