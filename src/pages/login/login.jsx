@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRecoilState } from 'recoil';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,11 +14,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import { isValidState, userInfoState } from '../../recoil/atoms';
+
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isEmailValid, setEmailValid] = useState(false);
-  const [isPasswordValid, setPasswordValid] = useState(false);
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+  const [isValid, setIsValid] = useRecoilState(isValidState);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -27,53 +28,56 @@ export default function Login() {
   };
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    setEmailValid(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(event.target.value));
+    let newEmail = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
+    setIsValid((isValid) => ({ ...isValid, email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail) }));
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    setPasswordValid(event.target.value.length >= 8);
+    let newPassword = event.target.value;
+    setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
+    setIsValid((isValid) => ({ ...isValid, password: newPassword.length >= 8 }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    console.log(userInfo);
+    // 서버 전송
+
+    // 서버에서 받은 정보 set
+    // setUserInfo((userInfo) => ({
+    //   ...userInfo,
+    //   nickname: nickname,
+    //   phone: phone,
+    //   email: email,
+    //   password: password,
+    // }));
   };
 
   const renderForm = (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      noValidate
-    >
-      <Stack spacing={3}>
+    <Box>
+      <Stack spacing={3} sx={{ my: 3 }}>
         <TextField
           name="email"
           label="이메일"
-          value={email}
+          value={userInfo.email}
           onChange={handleEmailChange}
-          error={!isEmailValid && email !== ""}
-          helperText={!isEmailValid && email !== "" ? '유효한 이메일을 입력하세요.' : ''}
+          error={!isValid.email && userInfo.email !== ""}
+          helperText={!isValid.email && userInfo.email !== "" ? '유효한 이메일을 입력하세요.' : ''}
         />
 
         <TextField
           name="password"
           label="비밀번호"
           type={showPassword ? 'text' : 'password'}
-          value={password}
+          value={userInfo.password}
           onChange={handlePasswordChange}
-          error={!isPasswordValid && password !== ""}
-          helperText={!isPasswordValid && password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
+          error={!isValid.password && userInfo.password !== ""}
+          helperText={!isValid.password && userInfo.password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
@@ -86,19 +90,13 @@ export default function Login() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          아이디/비밀번호 찾기
-        </Link>
-      </Stack>
-
       <Button
         fullWidth
         size="large"
-        type="submit"
         variant="contained"
         color="inherit"
-        disabled={!isEmailValid || !isPasswordValid}
+        disabled={!isValid.email || !isValid.password}
+        onClick={handleSubmit}
       >
         로그인
       </Button>
