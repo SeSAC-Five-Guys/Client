@@ -19,7 +19,7 @@ export default function BasicCard() {
 
   return (
     <Card sx={{
-      height: 300,
+      height: '100%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',

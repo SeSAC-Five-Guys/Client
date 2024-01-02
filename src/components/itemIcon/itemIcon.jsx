@@ -6,7 +6,7 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-export default function ItemIcon({ title, icon, link, sx, ...other }) {
+export default function ItemIcon({ title, icon, link }) {
   return (
     <Link href={link} underline="none">
       <Card
@@ -18,12 +18,10 @@ export default function ItemIcon({ title, icon, link, sx, ...other }) {
           px: 3,
           py: 5,
           borderRadius: 2,
-          ...sx,
         }}
-        {...other}
       >
         {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>}
-        <Typography variant="h4">{title}</Typography>
+        <Typography variant="h5">{title}</Typography>
       </Card>
     </Link>
   );
