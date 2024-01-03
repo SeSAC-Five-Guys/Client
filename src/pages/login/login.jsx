@@ -30,13 +30,19 @@ export default function Login() {
   const handleEmailChange = (event) => {
     let newEmail = event.target.value;
     setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
-    setIsValid((isValid) => ({ ...isValid, email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail) }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail),
+    }));
   };
 
   const handlePasswordChange = (event) => {
     let newPassword = event.target.value;
     setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
-    setIsValid((isValid) => ({ ...isValid, password: newPassword.length >= 8 }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      password: newPassword.length >= 8,
+    }));
   };
 
   const handleSubmit = (event) => {
@@ -62,8 +68,12 @@ export default function Login() {
           label="이메일"
           value={userInfo.email}
           onChange={handleEmailChange}
-          error={!isValid.email && userInfo.email !== ""}
-          helperText={!isValid.email && userInfo.email !== "" ? '유효한 이메일을 입력하세요.' : ''}
+          error={!isValid.email && userInfo.email !== ''}
+          helperText={
+            !isValid.email && userInfo.email !== ''
+              ? '유효한 이메일을 입력하세요.'
+              : ''
+          }
         />
 
         <TextField
@@ -72,8 +82,12 @@ export default function Login() {
           type={showPassword ? 'text' : 'password'}
           value={userInfo.password}
           onChange={handlePasswordChange}
-          error={!isValid.password && userInfo.password !== ""}
-          helperText={!isValid.password && userInfo.password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
+          error={!isValid.password && userInfo.password !== ''}
+          helperText={
+            !isValid.password && userInfo.password !== ''
+              ? '비밀번호는 8자 이상이어야 합니다.'
+              : ''
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -106,13 +120,7 @@ export default function Login() {
   return (
     <Box sx={{ height: 1 }}>
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card
-          sx={{
-            p: 5,
-            width: 1,
-            maxWidth: 420,
-          }}
-        >
+        <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h4">Welcome!</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
@@ -129,9 +137,8 @@ export default function Login() {
           </Divider>
 
           {renderForm}
-
         </Card>
       </Stack>
-    </Box >
+    </Box>
   );
 }

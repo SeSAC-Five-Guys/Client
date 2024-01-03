@@ -18,12 +18,14 @@ export default function BasicCard() {
   // 버튼 클릭 이벤트
 
   return (
-    <Card sx={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-    }}>
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
+    >
       <Box sx={{ p: 3 }}>
         <CardContent sx={{ mb: 1 }}>
           <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
@@ -31,23 +33,21 @@ export default function BasicCard() {
               {/* {userInfo.nickname} */}
               test
             </Typography>
-            <Typography variant="h5">
-              님 반가워용~ 🙋‍♂️
-            </Typography>
+            <Typography variant="h5">님 반가워용~ 🙋‍♂️</Typography>
           </Box>
-          <Typography color="text.secondary" >
+          <Typography color="text.secondary">
             {/* {userInfo.email} */}
             test@test.test
           </Typography>
-          <Typography color="text.secondary" >
+          <Typography color="text.secondary">
             {/* {userInfo.phone} */}
             123-123-123
           </Typography>
         </CardContent>
         <CardActions>
-          <Button variant='outlined'>회원 정보 변경하기</Button>
+          <Button variant="outlined">회원 정보 변경하기</Button>
         </CardActions>
       </Box>
-    </Card >
+    </Card>
   );
 }

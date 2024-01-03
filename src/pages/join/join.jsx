@@ -16,8 +16,12 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { userInfoState, isValidState, showEmailState } from '../../recoil/atoms';
 import FormDialog from '../../components/formDialog';
+import {
+  userInfoState,
+  isValidState,
+  showEmailState,
+} from '../../recoil/atoms';
 
 export default function Join() {
   // 닉네임, 전화번호, 이메일, 비밀번호
@@ -35,7 +39,10 @@ export default function Join() {
   const showEmail = useRecoilValue(showEmailState);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword((show) => !show);
+  };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
@@ -55,19 +62,28 @@ export default function Join() {
     }
     let newPhone = event.target.value;
     setUserInfo((userInfo) => ({ ...userInfo, phone: newPhone }));
-    setIsValid((isValid) => ({ ...isValid, phone: /^010\d{7,8}$/.test(newPhone) }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      phone: /^010\d{7,8}$/.test(newPhone),
+    }));
   };
 
   const handleEmailChange = (event) => {
     let newEmail = event.target.value;
     setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
-    setIsValid((isValid) => ({ ...isValid, email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail) }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail),
+    }));
   };
 
   const handlePasswordChange = (event) => {
     let newPassword = event.target.value;
     setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
-    setIsValid((isValid) => ({ ...isValid, password: newPassword.length >= 8 }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      password: newPassword.length >= 8,
+    }));
   };
 
   const handleConfirmPasswordChange = (event) => {
@@ -131,14 +147,23 @@ export default function Join() {
 
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
-          <Tooltip title="전화번호에 '-'를 포함하지 마세요." open={showTooltip} placement="top" arrow>
+          <Tooltip
+            title="전화번호에 '-'를 포함하지 마세요."
+            open={showTooltip}
+            placement="top"
+            arrow
+          >
             <TextField
               fullWidth
               name="phone"
               label="전화번호"
               onChange={handlePhoneChange}
-              error={!isValid.phone && userInfo.phone !== ""}
-              helperText={!isValid.phone && userInfo.phone !== "" ? '유효한 전화번호를 입력하세요.' : ''}
+              error={!isValid.phone && userInfo.phone !== ''}
+              helperText={
+                !isValid.phone && userInfo.phone !== ''
+                  ? '유효한 전화번호를 입력하세요.'
+                  : ''
+              }
             />
           </Tooltip>
         </Grid>
@@ -164,8 +189,12 @@ export default function Join() {
             label="이메일"
             disabled={!showEmail}
             onChange={handleEmailChange}
-            error={!isValid.email && userInfo.email !== ""}
-            helperText={!isValid.email && userInfo.email !== "" ? '유효한 이메일을 입력하세요.' : ''}
+            error={!isValid.email && userInfo.email !== ''}
+            helperText={
+              !isValid.email && userInfo.email !== ''
+                ? '유효한 이메일을 입력하세요.'
+                : ''
+            }
           />
         </Grid>
         <Grid item xs={4}>
@@ -179,8 +208,12 @@ export default function Join() {
           label="비밀번호"
           type={showPassword ? 'text' : 'password'}
           onChange={handlePasswordChange}
-          error={!isValid.password && userInfo.password !== ""}
-          helperText={!isValid.password && userInfo.password !== "" ? '비밀번호는 8자 이상이어야 합니다.' : ''}
+          error={!isValid.password && userInfo.password !== ''}
+          helperText={
+            !isValid.password && userInfo.password !== ''
+              ? '비밀번호는 8자 이상이어야 합니다.'
+              : ''
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -202,8 +235,12 @@ export default function Join() {
           type={showConfirmPassword ? 'text' : 'password'}
           value={confirmPassword}
           onChange={handleConfirmPasswordChange}
-          error={!isConfirmPasswordValid && confirmPassword !== ""}
-          helperText={!isConfirmPasswordValid && confirmPassword !== "" ? '입력한 값과 비밀번호가 다릅니다.' : ''}
+          error={!isConfirmPasswordValid && confirmPassword !== ''}
+          helperText={
+            !isConfirmPasswordValid && confirmPassword !== ''
+              ? '입력한 값과 비밀번호가 다릅니다.'
+              : ''
+          }
           disabled={!isValid.password || userInfo.password === ''}
           InputProps={{
             endAdornment: (
@@ -227,19 +264,27 @@ export default function Join() {
         size="large"
         variant="contained"
         color="inherit"
-        disabled={userInfo.nickname === '' || !isValid.phone || !isValid.email || !isValid.password || !isConfirmPasswordValid}
+        disabled={
+          userInfo.nickname === '' ||
+          !isValid.phone ||
+          !isValid.email ||
+          !isValid.password ||
+          !isConfirmPasswordValid
+        }
         onClick={handleSubmit}
       >
         회원가입
       </Button>
-    </Box >
+    </Box>
   );
 
   return (
     <Box sx={{ height: 1 }}>
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card sx={{ p: 5, width: 1, maxWidth: 420, }}>
-          <Typography variant="h4" sx={{ mb: 5 }}>회원가입</Typography>
+        <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
+          <Typography variant="h4" sx={{ mb: 5 }}>
+            회원가입
+          </Typography>
 
           {renderForm}
 
@@ -253,6 +298,6 @@ export default function Join() {
           </Typography>
         </Card>
       </Stack>
-    </Box >
+    </Box>
   );
 }

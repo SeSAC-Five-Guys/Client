@@ -6,7 +6,7 @@ export default function Header() {
 
   return (
     <AppBar
-      position='static'
+      position="static"
       sx={{
         boxShadow: 'none',
         height: 64,

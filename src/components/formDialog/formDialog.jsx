@@ -11,7 +11,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
-import { userInfoState, isValidState, showEmailState } from '../../recoil/atoms';
+import {
+  userInfoState,
+  isValidState,
+  showEmailState,
+} from '../../recoil/atoms';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -88,13 +92,15 @@ export default function FormDialog() {
         variant="contained"
         color="inherit"
         disabled={!isValid.email || !showEmail}
-        onClick={() => sendEmailVerification(userInfo.email)}>
+        onClick={() => sendEmailVerification(userInfo.email)}
+      >
         인증
       </Button>
       <Dialog
         open={open}
         TransitionComponent={Transition}
-        onClose={handleDialogClose}>
+        onClose={handleDialogClose}
+      >
         <Box sx={{ mx: 2, my: 2 }}>
           <DialogTitle variant="h4">✅ 인증번호</DialogTitle>
           <DialogContent>
@@ -112,10 +118,12 @@ export default function FormDialog() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDialogClose}>취소</Button>
-            <Button onClick={() => verifyEmailCode(userInfo.email, code)}>확인</Button>
+            <Button onClick={() => verifyEmailCode(userInfo.email, code)}>
+              확인
+            </Button>
           </DialogActions>
         </Box>
-      </Dialog >
+      </Dialog>
     </>
   );
 }
