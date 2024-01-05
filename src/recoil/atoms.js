@@ -7,7 +7,6 @@ export const userInfoState = atom({
     nickname: '',
     phone: '',
     email: '',
-    password: '',
   },
 });
 
