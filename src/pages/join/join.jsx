@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Box from '@mui/material/Box';
@@ -24,6 +25,8 @@ import {
 } from '../../recoil/atoms';
 
 export default function Join() {
+  const navigate = useNavigate();
+
   // 닉네임, 전화번호, 이메일, 비밀번호
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -96,28 +99,11 @@ export default function Join() {
     console.log(value);
   };
 
-  // const checkDuplicate = async (type, value) => {
-  //   try {
-  //     const res = await axios.post(
-  //       // api,
-  //       { [type]: value },
-  //       { headers: { 'Content-Type': 'application/json' } }
-  //     );
-
-  //     if (res.data.isDuplicated) {
-  //       alert(`이미 사용 중인 ${type}입니다.`);
-  //     } else {
-  //       alert(`사용 가능한 ${type}입니다.`);
-  //     }
-  //   } catch (error) {
-  //     console.error(`${type} 중복 확인 중 에러가 발생했습니다: `, error);
-  //   }
-  // };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(userInfo);
     // 서버 전송
+    navigate('/');
   };
 
   const renderForm = (
