@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import Box from '@mui/material/Box';
@@ -14,9 +15,17 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { isValidState, userInfoState } from '../../recoil/atoms';
+import { axiosRead } from '../../apis';
+import {
+  isValidState,
+  inputDataState,
+  userInfoState,
+} from '../../recoil/atoms';
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const [inputData, setInputData] = useRecoilState(inputDataState);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [isValid, setIsValid] = useRecoilState(isValidState);
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +38,7 @@ export default function Login() {
 
   const handleEmailChange = (event) => {
     let newEmail = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
+    setInputData((inputData) => ({ ...inputData, email: newEmail }));
     setIsValid((isValid) => ({
       ...isValid,
       email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail),
@@ -38,7 +47,7 @@ export default function Login() {
 
   const handlePasswordChange = (event) => {
     let newPassword = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
+    setInputData((inputData) => ({ ...inputData, password: newPassword }));
     setIsValid((isValid) => ({
       ...isValid,
       password: newPassword.length >= 8,
@@ -47,17 +56,20 @@ export default function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(userInfo);
     // 서버 전송
 
+    // 성공
     // 서버에서 받은 정보 set
-    // setUserInfo((userInfo) => ({
-    //   ...userInfo,
+    // setUserInfo({
     //   nickname: nickname,
     //   phone: phone,
     //   email: email,
-    //   password: password,
-    // }));
+    // });
+    navigate('/main');
+
+    // 실패
+    // alert('이메일 또는 비밀번호를 다시 확인해주세요');
+    // return;
   };
 
   const renderForm = (
@@ -66,11 +78,11 @@ export default function Login() {
         <TextField
           name="email"
           label="이메일"
-          value={userInfo.email}
+          value={inputData.email}
           onChange={handleEmailChange}
-          error={!isValid.email && userInfo.email !== ''}
+          error={!isValid.email && inputData.email !== ''}
           helperText={
-            !isValid.email && userInfo.email !== ''
+            !isValid.email && inputData.email !== ''
               ? '유효한 이메일을 입력하세요.'
               : ''
           }
@@ -80,11 +92,11 @@ export default function Login() {
           name="password"
           label="비밀번호"
           type={showPassword ? 'text' : 'password'}
-          value={userInfo.password}
+          value={inputData.password}
           onChange={handlePasswordChange}
-          error={!isValid.password && userInfo.password !== ''}
+          error={!isValid.password && inputData.password !== ''}
           helperText={
-            !isValid.password && userInfo.password !== ''
+            !isValid.password && inputData.password !== ''
               ? '비밀번호는 8자 이상이어야 합니다.'
               : ''
           }
