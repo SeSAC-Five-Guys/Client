@@ -22,6 +22,7 @@ export default function ItemIcon({ title, icon }) {
           px: 3,
           py: 5,
           borderRadius: 2,
+          cursor: 'pointer',
         }}
       >
         {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>}
@@ -34,5 +35,4 @@ export default function ItemIcon({ title, icon }) {
 ItemIcon.propTypes = {
   title: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  sx: PropTypes.object,
 };
