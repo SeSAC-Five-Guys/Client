@@ -28,6 +28,7 @@ export default function Main() {
                 <Grid xs={12} sm={6}>
                   <ItemIcon
                     title="Kibana"
+                    param="kibana"
                     icon={<img alt="icon" src="/assets/logos/kibana.png" />}
                   />
                 </Grid>
@@ -35,6 +36,7 @@ export default function Main() {
                 <Grid xs={12} sm={6}>
                   <ItemIcon
                     title="Grafana"
+                    param="grafana"
                     icon={<img alt="icon" src="/assets/logos/grafana.png" />}
                   />
                 </Grid>
@@ -46,6 +48,7 @@ export default function Main() {
                 <Grid xs={12} sm={6}>
                   <ItemIcon
                     title="Kafka UI"
+                    param="kafkaui"
                     icon={<img alt="icon" src="/assets/logos/kafka.webp" />}
                   />
                 </Grid>
@@ -53,6 +56,7 @@ export default function Main() {
                 <Grid xs={12} sm={6}>
                   <ItemIcon
                     title="Argo CD"
+                    param="argocd"
                     icon={<img alt="icon" src="/assets/logos/argocd.png" />}
                   />
                 </Grid>

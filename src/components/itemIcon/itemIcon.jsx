@@ -6,9 +6,9 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-export default function ItemIcon({ title, icon }) {
-  const handleLink = (event) => {
-    console.log('이현범바보');
+export default function ItemIcon({ title, param, icon }) {
+  const handleLink = async () => {
+    window.location.href = `${process.env.REACT_APP_AUTH_SERVER_HOST}authorization/admin/${param}`;
   };
 
   return (
