@@ -49,27 +49,47 @@ export default function Modify() {
   };
 
   const checkDuplicateNickname = async () => {
-    // axiosWrite
-    //   .post('', {
-    //     nickname: inputData.nickname,
-    //   })
-    //   .then((res) => {
-    //     // 중복체크 한번은 됐는지 상태 저장
-    //     setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
-    //   })
-    //   .catch((e) => {});
+    axiosWrite
+      .get(`members/nickname/${inputData.nickname}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        const res = response.data
+        if(res.success){
+          setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
+          alert("닉네임 중복 확인 완료.")
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data
+        if(res.errorStatus == "DUPLICATE_NICKNAME"){
+          alert("이미 존재하는 닉네임이다 닝겐.")
+        } else {
+          alert("알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.")
+        }
+      });
   };
 
   const checkDuplicatePhone = async () => {
-    // axiosWrite
-    //   .post('', {
-    //     phone: inputData.phone,
-    //   })
-    //   .then((res) => {
-    //     // 중복체크 한번은 됐는지 상태 저장
-    //     setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
-    //   })
-    //   .catch((e) => {});
+    axiosWrite
+      .get(`members/phone_number/${inputData.phone}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        const res = response.data
+        if(res.success){
+          setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
+          alert("핸드폰 번호 중복 확인 완료.")
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data
+        if(res.errorStatus == "DUPLICATE_PHONENUMBER"){
+          alert("이미 존재하는 핸드폰 번호다 닝겐.")
+        } else {
+          alert("알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.")
+        }
+      });
   };
 
   const handleQuit = async () => {
