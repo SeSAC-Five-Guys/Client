@@ -46,7 +46,9 @@ export default function Login() {
     setInputData((inputData) => ({ ...inputData, password: newPassword }));
     setIsValid((isValid) => ({
       ...isValid,
-      password: newPassword.length >= 8,
+      password: /^(?=.*[0-9a-zA-Z!@#$%&])[-0-9a-zA-Z!@#$%&]{6,12}$/.test(
+        newPassword
+      ),
     }));
   };
 
