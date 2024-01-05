@@ -54,11 +54,16 @@ export default function Login() {
     event.preventDefault();
 
     axiosAuth
-      .post(`authentication/member`, {
-        email: inputData.email,
-        password: inputData.password,
-      })
-      .then((res) => {
+      .post(
+        `authentication/member`,
+        {
+          email: inputData.email,
+          password: inputData.password,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        const res = response.data;
         if (res.success) {
           setUserInfo({
             nickname: res.data.nickname,
