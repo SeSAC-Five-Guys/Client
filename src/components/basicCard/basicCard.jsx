@@ -1,4 +1,5 @@
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
 
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -12,8 +13,20 @@ import { userInfoState } from '../../recoil/atoms';
 
 export default function BasicCard() {
   const theme = useTheme();
+  const navigate = useNavigate();
 
-  const userInfo = useRecoilValue(userInfoState);
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+
+  const handleLogout = (event) => {
+    setUserInfo((userInfo) => ({
+      ...userInfo,
+      nickname: '',
+      email: '',
+      phone: '',
+      password: '',
+    }));
+    navigate('/');
+  };
 
   // 버튼 클릭 이벤트
 
@@ -46,6 +59,16 @@ export default function BasicCard() {
         </CardContent>
         <CardActions>
           <Button variant="outlined">회원 정보 변경하기</Button>
+          <Button
+            variant="outlined"
+            sx={{
+              color: theme.palette.error.main,
+              borderColor: theme.palette.error.main,
+            }}
+            onClick={handleLogout}
+          >
+            로그아웃
+          </Button>
         </CardActions>
       </Box>
     </Card>
