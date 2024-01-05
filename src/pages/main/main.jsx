@@ -29,7 +29,6 @@ export default function Main() {
                   <ItemIcon
                     title="Kibana"
                     icon={<img alt="icon" src="/assets/logos/kibana.png" />}
-                    link="/"
                   />
                 </Grid>
 
@@ -37,7 +36,6 @@ export default function Main() {
                   <ItemIcon
                     title="Grafana"
                     icon={<img alt="icon" src="/assets/logos/grafana.png" />}
-                    link="/"
                   />
                 </Grid>
               </Grid>
@@ -49,7 +47,6 @@ export default function Main() {
                   <ItemIcon
                     title="Kafka UI"
                     icon={<img alt="icon" src="/assets/logos/kafka.webp" />}
-                    link="/"
                   />
                 </Grid>
 
@@ -57,7 +54,6 @@ export default function Main() {
                   <ItemIcon
                     title="Argo CD"
                     icon={<img alt="icon" src="/assets/logos/argocd.png" />}
-                    link="/"
                   />
                 </Grid>
               </Grid>

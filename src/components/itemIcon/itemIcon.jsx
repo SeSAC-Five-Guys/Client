@@ -6,9 +6,13 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-export default function ItemIcon({ title, icon, link }) {
+export default function ItemIcon({ title, icon }) {
+  const handleLink = (event) => {
+    console.log('이현범바보');
+  };
+
   return (
-    <Link href={link} underline="none">
+    <Link underline="none" onClick={handleLink}>
       <Card
         component={Stack}
         spacing={3}
@@ -30,6 +34,5 @@ export default function ItemIcon({ title, icon, link }) {
 ItemIcon.propTypes = {
   title: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  link: PropTypes.string,
   sx: PropTypes.object,
 };
