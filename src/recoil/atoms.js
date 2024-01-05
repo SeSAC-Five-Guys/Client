@@ -1,4 +1,7 @@
 import { atom } from 'recoil';
+import { recoilPersist } from 'recoil-persist';
+
+const { persistAtom } = recoilPersist();
 
 // 회원 정보
 export const userInfoState = atom({
@@ -8,6 +11,7 @@ export const userInfoState = atom({
     phone: '',
     email: '',
   },
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 유효성 검사
