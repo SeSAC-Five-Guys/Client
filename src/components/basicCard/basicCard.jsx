@@ -18,17 +18,14 @@ export default function BasicCard() {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
   const handleLogout = (event) => {
-    setUserInfo((userInfo) => ({
-      ...userInfo,
+    setUserInfo({
       nickname: '',
       email: '',
       phone: '',
       password: '',
-    }));
+    });
     navigate('/');
   };
-
-  // 버튼 클릭 이벤트
 
   return (
     <Card
@@ -43,19 +40,12 @@ export default function BasicCard() {
         <CardContent sx={{ mb: 1 }}>
           <Box sx={{ mb: 1.5, display: 'flex', alignItems: 'center' }}>
             <Typography variant="h5" color={theme.palette.info.main}>
-              {/* {userInfo.nickname} */}
-              test
+              {userInfo.nickname}
             </Typography>
             <Typography variant="h5">님 반가워용~ 🙋‍♂️</Typography>
           </Box>
-          <Typography color="text.secondary">
-            {/* {userInfo.email} */}
-            test@test.test
-          </Typography>
-          <Typography color="text.secondary">
-            {/* {userInfo.phone} */}
-            123-123-123
-          </Typography>
+          <Typography color="text.secondary">{userInfo.email}</Typography>
+          <Typography color="text.secondary">{userInfo.phone}</Typography>
         </CardContent>
         <CardActions>
           <Button variant="outlined">회원 정보 변경하기</Button>
