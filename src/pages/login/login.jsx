@@ -15,19 +15,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { axiosRead } from '../../apis';
-import {
-  isValidState,
-  inputDataState,
-  userInfoState,
-} from '../../recoil/atoms';
+import { axiosAuth } from '../../apis';
+import { isValidState, userInfoState } from '../../recoil/atoms';
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const [inputData, setInputData] = useRecoilState(inputDataState);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [isValid, setIsValid] = useRecoilState(isValidState);
+  const [inputData, setInputData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -54,22 +50,27 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // 서버 전송
 
-    // 성공
-    // 서버에서 받은 정보 set
-    // setUserInfo({
-    //   nickname: nickname,
-    //   phone: phone,
-    //   email: email,
-    // });
-    navigate('/main');
-
-    // 실패
-    // alert('이메일 또는 비밀번호를 다시 확인해주세요');
-    // return;
+    axiosAuth
+      .post(`authentication/member`, {
+        email: inputData.email,
+        password: inputData.password,
+      })
+      .then((res) => {
+        if (res.success) {
+          setUserInfo({
+            nickname: res.data.nickname,
+            phone: res.data.phoneNumber,
+            email: res.data.email,
+          });
+          navigate('/main');
+        }
+      })
+      .catch((err) => {
+        alert('이메일 또는 비밀번호를 다시 확인해주세요');
+      });
   };
 
   const renderForm = (
