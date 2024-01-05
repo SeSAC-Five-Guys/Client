@@ -1,16 +1,5 @@
 import { atom } from 'recoil';
 
-// 입력 정보
-export const inputDataState = atom({
-  key: 'inputDataState',
-  default: {
-    nickname: '',
-    phone: '',
-    email: '',
-    password: '',
-  },
-});
-
 // 회원 정보
 export const userInfoState = atom({
   key: 'userInfoState',

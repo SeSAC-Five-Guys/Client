@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useRecoilState } from 'recoil';
 
 import { useTheme } from '@mui/material/styles';
@@ -13,11 +14,15 @@ import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { axiosWrite } from '../../apis';
 import { userInfoState, isValidState } from '../../recoil/atoms';
 
 export default function Modify() {
+  const navigate = useNavigate();
+
   const theme = useTheme();
 
+  const [inputData, setInputData] = useState({ nickname: '', phone: '' });
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [isValid, setIsValid] = useRecoilState(isValidState);
   const [isChecked, setIsChecked] = useState({ nickname: false, phone: false });
@@ -25,7 +30,7 @@ export default function Modify() {
 
   const handleNicknameChange = (event) => {
     let newNickname = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, nickname: newNickname }));
+    setInputData((inputData) => ({ ...inputData, nickname: newNickname }));
   };
 
   const handlePhoneChange = (event) => {
@@ -36,29 +41,85 @@ export default function Modify() {
       setShowTooltip(false);
     }
     let newPhone = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, phone: newPhone }));
+    setInputData((inputData) => ({ ...inputData, phone: newPhone }));
     setIsValid((isValid) => ({
       ...isValid,
       phone: /^010\d{7,8}$/.test(newPhone),
     }));
   };
 
-  const checkDuplicate = async (value) => {
-    // 중복체크 한번은 눌렀는지 상태 저장
-    // setIsChecked((prev) => ({ ...prev, nickname: true }));
-    console.log(value);
-    console.log(isChecked);
+  const checkDuplicateNickname = async () => {
+    // axiosWrite
+    //   .post('', {
+    //     nickname: inputData.nickname,
+    //   })
+    //   .then((res) => {
+    //     // 중복체크 한번은 됐는지 상태 저장
+    //     setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
+    //   })
+    //   .catch((e) => {});
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(userInfo);
+  const checkDuplicatePhone = async () => {
+    // axiosWrite
+    //   .post('', {
+    //     phone: inputData.phone,
+    //   })
+    //   .then((res) => {
+    //     // 중복체크 한번은 됐는지 상태 저장
+    //     setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
+    //   })
+    //   .catch((e) => {});
+  };
 
-    // if (isChecked.nickname && isChecked.phone) {
-    //   // 서버 전송
-    // } else {
+  const handleQuit = async () => {
+    // axiosWrite
+    //   .get()
+    //   .then((res) => {
+    //     // 상태 초기화
+    //     setUserInfo({
+    //       nickname: '',
+    //       phone: '',
+    //       email: '',
+    //       password: '',
+    //     });
+    //     // 로그인 화면으로 이동
+    //     navigate('/');
+    //   })
+    //   .catch((e) => {});
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // 중복 확인 버튼 눌렀는지 확인
+    // if (!isChecked.nickname || !isChecked.phone) {
     //   alert('중복확인 버튼을 눌러주세요!');
+    //   return;
     // }
+
+    // 중복 확인?
+
+    // 데이터 업데이트
+    // axiosWrite
+    //   .post('', {
+    //     nickname: inputData.nickname,
+    //     phone: inputData.phone,
+    //   })
+    //   .then((res) => {
+    //     // 성공하면 응답 값으로 업데이트
+    //     setUserInfo((userInfo) => ({
+    //       ...userInfo,
+    //       nickname: '',
+    //       phone: '',
+    //     }));
+    //     // 다시 로그인
+    //     alert('변경된 정보로 다시 로그인해주세요!');
+    //     navigate('/');
+    //   })
+    //   .catch((e) => {
+    //     alert('이메일 또는 비밀번호를 확인해주세요!');
+    //   });
   };
 
   const renderForm = (
@@ -78,8 +139,8 @@ export default function Modify() {
             size="large"
             variant="contained"
             color="inherit"
-            disabled={userInfo.nickname === ''}
-            // onClick={() => checkDuplicate(userInfo.nickname)}
+            disabled={inputData.nickname === ''}
+            onClick={checkDuplicateNickname}
           >
             중복확인
           </Button>
@@ -99,9 +160,9 @@ export default function Modify() {
               name="phone"
               label="전화번호"
               onChange={handlePhoneChange}
-              error={!isValid.phone && userInfo.phone !== ''}
+              error={!isValid.phone && inputData.phone !== ''}
               helperText={
-                !isValid.phone && userInfo.phone !== ''
+                !isValid.phone && inputData.phone !== ''
                   ? '유효한 전화번호를 입력하세요.'
                   : ''
               }
@@ -115,7 +176,7 @@ export default function Modify() {
             variant="contained"
             color="inherit"
             disabled={!isValid.phone}
-            // onClick={() => checkDuplicate(userInfo.phone)}
+            onClick={checkDuplicatePhone}
           >
             중복확인
           </Button>
@@ -127,7 +188,7 @@ export default function Modify() {
         size="large"
         variant="contained"
         color="inherit"
-        disabled={userInfo.nickname === '' || !isValid.phone}
+        disabled={inputData.nickname === '' || !isValid.phone}
         onClick={handleSubmit}
       >
         변경
@@ -165,7 +226,7 @@ export default function Modify() {
               variant="subtitle2"
               underline="hover"
               sx={{ color: theme.palette.error.main }}
-              // onClick={}
+              onClick={handleQuit}
             >
               회원 탈퇴
             </Link>
