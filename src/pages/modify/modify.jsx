@@ -29,22 +29,30 @@ export default function Modify() {
   const [showTooltip, setShowTooltip] = useState(false);
 
   const handleNicknameChange = (event) => {
+    const validation = new RegExp(
+      `^(?=.[가-힣a-zA-Z])[-가-힣a-zA-Z0-9!@#$%&]{5,12}$|(?=.[가-힣])[-가-힣0-9!@#$%&]{5,12}$|(?=.*[a-zA-Z])[-a-zA-Z0-9!@#$%&]{5,12}$`
+    );
     let newNickname = event.target.value;
     setInputData((inputData) => ({ ...inputData, nickname: newNickname }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      nickname: validation.test(newNickname),
+    }));
   };
 
   const handlePhoneChange = (event) => {
-    if (event.target.value.includes('-')) {
+    if (/\D/.test(event.target.value)) {
       setShowTooltip(true);
-      event.target.value = event.target.value.replace(/-/g, '');
+      event.target.value = event.target.value.replace(/\D/g, '');
     } else {
       setShowTooltip(false);
     }
+    const validation = new RegExp(`^01[0-9]{9}$`);
     let newPhone = event.target.value;
     setInputData((inputData) => ({ ...inputData, phone: newPhone }));
     setIsValid((isValid) => ({
       ...isValid,
-      phone: /^010\d{7,8}$/.test(newPhone),
+      phone: validation.test(newPhone),
     }));
   };
 
@@ -151,6 +159,13 @@ export default function Modify() {
             name="nickname"
             label="닉네임"
             onChange={handleNicknameChange}
+            error={!isValid.nickname && inputData.nickname !== ''}
+            helperText={
+              !isValid.nickname && inputData.nickname !== ''
+                ? `· 한글 5-12자 이내\n· !, @, #, $, %, & 허용`
+                : ''
+            }
+            FormHelperTextProps={{ style: { whiteSpace: 'pre-wrap' } }}
           />
         </Grid>
         <Grid item xs={4}>
@@ -159,7 +174,7 @@ export default function Modify() {
             size="large"
             variant="contained"
             color="inherit"
-            disabled={inputData.nickname === ''}
+            disabled={!isValid.nickname && inputData.nickname === ''}
             onClick={checkDuplicateNickname}
           >
             중복확인
@@ -170,7 +185,7 @@ export default function Modify() {
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <Tooltip
-            title="전화번호에 '-'를 포함하지 마세요."
+            title="전화번호에 숫자만 써주세요."
             open={showTooltip}
             placement="top"
             arrow

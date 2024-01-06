@@ -65,42 +65,52 @@ export default function Join() {
   };
 
   const handleNicknameChange = (event) => {
+    const validation = new RegExp(
+      `^(?=.[가-힣a-zA-Z])[-가-힣a-zA-Z0-9!@#$%&]{5,12}$|(?=.[가-힣])[-가-힣0-9!@#$%&]{5,12}$|(?=.*[a-zA-Z])[-a-zA-Z0-9!@#$%&]{5,12}$`
+    );
     let newNickname = event.target.value;
     setInputData((inputData) => ({ ...inputData, nickname: newNickname }));
-    // nickname 유효성 검사 추가
-    setIsValid((isValid) => ({ ...isValid, nickname: true }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      nickname: validation.test(newNickname),
+    }));
   };
 
   const handlePhoneChange = (event) => {
-    if (event.target.value.includes('-')) {
+    if (/\D/.test(event.target.value)) {
       setShowTooltip(true);
-      event.target.value = event.target.value.replace(/-/g, '');
+      event.target.value = event.target.value.replace(/\D/g, '');
     } else {
       setShowTooltip(false);
     }
+    const validation = new RegExp(`^01[0-9]{9}$`);
     let newPhone = event.target.value;
     setInputData((inputData) => ({ ...inputData, phone: newPhone }));
     setIsValid((isValid) => ({
       ...isValid,
-      phone: /^010\d{7,8}$/.test(newPhone),
+      phone: validation.test(newPhone),
     }));
   };
 
   const handleEmailChange = (event) => {
+    const validation = new RegExp(`/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/`);
     let newEmail = event.target.value;
     setInputData((inputData) => ({ ...inputData, email: newEmail }));
     setIsValid((isValid) => ({
       ...isValid,
-      email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail),
+      email: validation.test(newEmail),
     }));
   };
 
   const handlePasswordChange = (event) => {
+    const validation = new RegExp(
+      `^(?=.*[0-9a-zA-Z!@#$%&])[-0-9a-zA-Z!@#$%&]{6,12}$`
+    );
     let newPassword = event.target.value;
     setInputData((inputData) => ({ ...inputData, password: newPassword }));
     setIsValid((isValid) => ({
       ...isValid,
-      password: newPassword.length >= 8,
+      password: validation.test(newPassword),
     }));
   };
 
@@ -130,6 +140,7 @@ export default function Join() {
   };
 
   // 이메일 인증 번호 전송
+  // 인증번호 확인은 dialog에서
   const sendEmailVerification = async () => {
     setShowDialog(true);
     // // 중복 확인 실패하면 전송 X
@@ -150,8 +161,6 @@ export default function Join() {
     //     console.error(`이메일 인증 번호 전송 중 에러가 발생했습니다: `, err);
     //   });
   };
-
-  // 인증번호 확인은 dialog에서
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -174,6 +183,13 @@ export default function Join() {
             name="nickname"
             label="닉네임"
             onChange={handleNicknameChange}
+            error={!isValid.nickname && inputData.nickname !== ''}
+            helperText={
+              !isValid.nickname && inputData.nickname !== ''
+                ? `· 한글 5-12자 이내\n· !, @, #, $, %, & 허용`
+                : ''
+            }
+            FormHelperTextProps={{ style: { whiteSpace: 'pre-wrap' } }}
           />
         </Grid>
         <Grid item xs={4}>
@@ -183,7 +199,7 @@ export default function Join() {
             variant="contained"
             color="inherit"
             disabled={inputData.nickname === ''}
-            // onClick={checkDuplicateNickname}
+            onClick={checkDuplicateNickname}
           >
             중복확인
           </Button>
@@ -193,7 +209,7 @@ export default function Join() {
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <Tooltip
-            title="전화번호에 '-'를 포함하지 마세요."
+            title="전화번호에 숫자만 써주세요."
             open={showTooltip}
             placement="top"
             arrow
@@ -219,7 +235,7 @@ export default function Join() {
             variant="contained"
             color="inherit"
             disabled={!isValid.phone}
-            // onClick={checkDuplicatePhone}
+            onClick={checkDuplicatePhone}
           >
             중복확인
           </Button>
@@ -271,9 +287,10 @@ export default function Join() {
           error={!isValid.password && inputData.password !== ''}
           helperText={
             !isValid.password && inputData.password !== ''
-              ? '비밀번호는 8자 이상이어야 합니다.'
+              ? '· 6-12자 이내\n· 숫자, 알파벳 대소문자, 특수문자 최소 1개 포함'
               : ''
           }
+          FormHelperTextProps={{ style: { whiteSpace: 'pre-wrap' } }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
