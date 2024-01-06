@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -17,29 +17,42 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import FormDialog from '../../components/formDialog';
-import {
-  userInfoState,
-  isValidState,
-  showEmailState,
-} from '../../recoil/atoms';
+import { userInfoState } from '../../recoil/atoms';
+import { axiosWrite } from '../../apis';
+import VerifyDialog from '../../components/verifyDialog';
 
 export default function Join() {
   const navigate = useNavigate();
 
-  // 닉네임, 전화번호, 이메일, 비밀번호
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  // 유효성 검사
-  const [isValid, setIsValid] = useRecoilState(isValidState);
-  const [isConfirmPasswordValid, setConfirmPasswordValid] = useState(false);
-
-  // 이벤트
+  const [inputData, setInputData] = useState({
+    nickname: '',
+    phone: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [isValid, setIsValid] = useState({
+    nickname: false,
+    phone: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const [isChecked, setIsChecked] = useState({
+    nickname: false,
+    phone: false,
+    email: false,
+  });
+  const [showEmail, setShowEmail] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const showEmail = useRecoilValue(showEmailState);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const handleDialogClose = () => setShowDialog(false);
+
+  const handleEmailClose = () => setShowEmail(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -53,7 +66,9 @@ export default function Join() {
 
   const handleNicknameChange = (event) => {
     let newNickname = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, nickname: newNickname }));
+    setInputData((inputData) => ({ ...inputData, nickname: newNickname }));
+    // nickname 유효성 검사 추가
+    setIsValid((isValid) => ({ ...isValid, nickname: true }));
   };
 
   const handlePhoneChange = (event) => {
@@ -64,7 +79,7 @@ export default function Join() {
       setShowTooltip(false);
     }
     let newPhone = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, phone: newPhone }));
+    setInputData((inputData) => ({ ...inputData, phone: newPhone }));
     setIsValid((isValid) => ({
       ...isValid,
       phone: /^010\d{7,8}$/.test(newPhone),
@@ -73,7 +88,7 @@ export default function Join() {
 
   const handleEmailChange = (event) => {
     let newEmail = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, email: newEmail }));
+    setInputData((inputData) => ({ ...inputData, email: newEmail }));
     setIsValid((isValid) => ({
       ...isValid,
       email: /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newEmail),
@@ -82,7 +97,7 @@ export default function Join() {
 
   const handlePasswordChange = (event) => {
     let newPassword = event.target.value;
-    setUserInfo((userInfo) => ({ ...userInfo, password: newPassword }));
+    setInputData((inputData) => ({ ...inputData, password: newPassword }));
     setIsValid((isValid) => ({
       ...isValid,
       password: newPassword.length >= 8,
@@ -91,19 +106,63 @@ export default function Join() {
 
   const handleConfirmPasswordChange = (event) => {
     let newConfirmPassword = event.target.value;
-    setConfirmPassword(newConfirmPassword);
-    setConfirmPasswordValid(newConfirmPassword === userInfo.password);
+    setInputData((inputData) => ({
+      ...inputData,
+      confirmPassword: newConfirmPassword,
+    }));
+    setIsValid((isValid) => ({
+      ...isValid,
+      confirmPassword: newConfirmPassword === inputData.password,
+    }));
   };
 
-  const checkDuplicate = async (value) => {
-    console.log(value);
+  // 중복 체크
+  const checkDuplicateNickname = async () => {
+    setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
   };
 
-  const handleSubmit = (event) => {
+  const checkDuplicatePhone = async () => {
+    setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
+  };
+
+  const checkDuplicateEmail = async () => {
+    setIsChecked((isChecked) => ({ ...isChecked, email: true }));
+  };
+
+  // 이메일 인증 번호 전송
+  const sendEmailVerification = async () => {
+    setShowDialog(true);
+    // // 중복 확인 실패하면 전송 X
+    // if (!checkDuplicateEmail) {
+    //   return;
+    // }
+
+    // axiosWrite
+    //   .get(``, { email: inputData.email })
+    //   .then((response) => {
+    //     const res = response.data;
+    //     if (res.success) {
+    //       // 입력 받기 위한 dialog 열기
+    //       setShowDialog(true);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.error(`이메일 인증 번호 전송 중 에러가 발생했습니다: `, err);
+    //   });
+  };
+
+  // 인증번호 확인은 dialog에서
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(userInfo);
-    // 서버 전송
-    navigate('/');
+
+    // 성공
+    // setUserInfo({
+    //   nickname: inputData.nickname,
+    //   phone: inputData.phone,
+    //   email: inputData.email,
+    // });
+    // navigate('/');
   };
 
   const renderForm = (
@@ -123,8 +182,8 @@ export default function Join() {
             size="large"
             variant="contained"
             color="inherit"
-            disabled={userInfo.nickname === ''}
-            onClick={() => checkDuplicate(userInfo.nickname)}
+            disabled={inputData.nickname === ''}
+            // onClick={checkDuplicateNickname}
           >
             중복확인
           </Button>
@@ -144,9 +203,9 @@ export default function Join() {
               name="phone"
               label="전화번호"
               onChange={handlePhoneChange}
-              error={!isValid.phone && userInfo.phone !== ''}
+              error={!isValid.phone && inputData.phone !== ''}
               helperText={
-                !isValid.phone && userInfo.phone !== ''
+                !isValid.phone && inputData.phone !== ''
                   ? '유효한 전화번호를 입력하세요.'
                   : ''
               }
@@ -160,7 +219,7 @@ export default function Join() {
             variant="contained"
             color="inherit"
             disabled={!isValid.phone}
-            onClick={() => checkDuplicate(userInfo.phone)}
+            // onClick={checkDuplicatePhone}
           >
             중복확인
           </Button>
@@ -175,16 +234,31 @@ export default function Join() {
             label="이메일"
             disabled={!showEmail}
             onChange={handleEmailChange}
-            error={!isValid.email && userInfo.email !== ''}
+            error={!isValid.email && inputData.email !== ''}
             helperText={
-              !isValid.email && userInfo.email !== ''
+              !isValid.email && inputData.email !== ''
                 ? '유효한 이메일을 입력하세요.'
                 : ''
             }
           />
         </Grid>
         <Grid item xs={4}>
-          <FormDialog />
+          <Button
+            fullWidth
+            size="large"
+            variant="contained"
+            color="inherit"
+            disabled={!isValid.email || !showEmail}
+            onClick={sendEmailVerification}
+          >
+            인증
+          </Button>
+          <VerifyDialog
+            open={showDialog}
+            close={handleDialogClose}
+            email={inputData.email}
+            showEmail={handleEmailClose}
+          />
         </Grid>
       </Grid>
 
@@ -194,9 +268,9 @@ export default function Join() {
           label="비밀번호"
           type={showPassword ? 'text' : 'password'}
           onChange={handlePasswordChange}
-          error={!isValid.password && userInfo.password !== ''}
+          error={!isValid.password && inputData.password !== ''}
           helperText={
-            !isValid.password && userInfo.password !== ''
+            !isValid.password && inputData.password !== ''
               ? '비밀번호는 8자 이상이어야 합니다.'
               : ''
           }
@@ -219,15 +293,15 @@ export default function Join() {
           name="confirmPassword"
           label="비밀번호 확인"
           type={showConfirmPassword ? 'text' : 'password'}
-          value={confirmPassword}
+          value={inputData.confirmPassword}
           onChange={handleConfirmPasswordChange}
-          error={!isConfirmPasswordValid && confirmPassword !== ''}
+          error={!isValid.confirmPassword && inputData.confirmPassword !== ''}
           helperText={
-            !isConfirmPasswordValid && confirmPassword !== ''
+            !isValid.confirmPassword && inputData.confirmPassword !== ''
               ? '입력한 값과 비밀번호가 다릅니다.'
               : ''
           }
-          disabled={!isValid.password || userInfo.password === ''}
+          disabled={!isValid.password || inputData.password === ''}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -235,7 +309,7 @@ export default function Join() {
                   onClick={handleClickShowConfirmPassword}
                   onMouseDown={handleMouseDownPassword}
                   edge="end"
-                  disabled={!isValid.password || userInfo.password === ''}
+                  disabled={!isValid.password || inputData.password === ''}
                 >
                   {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
@@ -251,11 +325,11 @@ export default function Join() {
         variant="contained"
         color="inherit"
         disabled={
-          userInfo.nickname === '' ||
+          !isValid.nickname ||
           !isValid.phone ||
           !isValid.email ||
           !isValid.password ||
-          !isConfirmPasswordValid
+          !isValid.confirmPassword
         }
         onClick={handleSubmit}
       >
