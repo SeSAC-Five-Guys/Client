@@ -16,14 +16,14 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { axiosAuth } from '../../apis';
-import { isValidState, userInfoState } from '../../recoil/atoms';
+import { userInfoState } from '../../recoil/atoms';
 
 export default function Login() {
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const [isValid, setIsValid] = useRecoilState(isValidState);
   const [inputData, setInputData] = useState({ email: '', password: '' });
+  const [isValid, setIsValid] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);

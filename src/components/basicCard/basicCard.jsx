@@ -12,12 +12,14 @@ import CardContent from '@mui/material/CardContent';
 import { userInfoState } from '../../recoil/atoms';
 
 export default function BasicCard() {
-  const theme = useTheme();
   const navigate = useNavigate();
+
+  const theme = useTheme();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
 
-  const handleLogout = (event) => {
+  const handleLogout = async () => {
+    // 성공한 경우
     setUserInfo({ nickname: '', email: '', phone: '' });
     navigate('/');
   };

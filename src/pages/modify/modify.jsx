@@ -15,16 +15,16 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import { axiosWrite } from '../../apis';
-import { userInfoState, isValidState } from '../../recoil/atoms';
+import { userInfoState } from '../../recoil/atoms';
 
 export default function Modify() {
   const navigate = useNavigate();
 
   const theme = useTheme();
 
-  const [inputData, setInputData] = useState({ nickname: '', phone: '' });
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-  const [isValid, setIsValid] = useRecoilState(isValidState);
+  const [inputData, setInputData] = useState({ nickname: '', phone: '' });
+  const [isValid, setIsValid] = useState({ nickname: false, phone: false });
   const [isChecked, setIsChecked] = useState({ nickname: false, phone: false });
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -54,18 +54,18 @@ export default function Modify() {
         withCredentials: true,
       })
       .then((response) => {
-        const res = response.data
-        if(res.success){
+        const res = response.data;
+        if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
-          alert("닉네임 중복 확인 완료.")
+          alert('닉네임 중복 확인 완료.');
         }
       })
       .catch((e) => {
-        const res = e.response.data
-        if(res.errorStatus == "DUPLICATE_NICKNAME"){
-          alert("이미 존재하는 닉네임이다 닝겐.")
+        const res = e.response.data;
+        if (res.errorStatus == 'DUPLICATE_NICKNAME') {
+          alert('이미 존재하는 닉네임이다 닝겐.');
         } else {
-          alert("알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.")
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.');
         }
       });
   };
@@ -76,18 +76,18 @@ export default function Modify() {
         withCredentials: true,
       })
       .then((response) => {
-        const res = response.data
-        if(res.success){
+        const res = response.data;
+        if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
-          alert("핸드폰 번호 중복 확인 완료.")
+          alert('핸드폰 번호 중복 확인 완료.');
         }
       })
       .catch((e) => {
-        const res = e.response.data
-        if(res.errorStatus == "DUPLICATE_PHONENUMBER"){
-          alert("이미 존재하는 핸드폰 번호다 닝겐.")
+        const res = e.response.data;
+        if (res.errorStatus == 'DUPLICATE_PHONENUMBER') {
+          alert('이미 존재하는 핸드폰 번호다 닝겐.');
         } else {
-          alert("알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.")
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.');
         }
       });
   };
