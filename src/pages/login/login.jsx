@@ -17,8 +17,25 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { axiosAuth } from '../../apis';
 import { userInfoState } from '../../recoil/atoms';
+import { useCookies } from 'react-cookie';
+import { useEffect } from 'react';
 
 export default function Login() {
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+  useEffect(() => {
+    axiosAuth
+      .get(`authorization/all/member`, { withCredentials: true })
+      .then((response) => {
+        const res = response.data
+        if (res.success){
+          alert("이미 로그인 되어 있습니다.")
+          navigate('/main')
+        }
+      })
+      .catch(() => {
+        removeCookie('accessTokenSFG');
+      });
+  }, []);
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);

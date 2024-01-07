@@ -1,44 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { axiosAuth } from '../apis';
+import { useCookies } from 'react-cookie';
 
 const PrivateRoute = ({ children }) => {
   const navigate = useNavigate();
 
+  const [cookies] = useCookies(['accessTokenSFG']);
+
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    const authenticate = async () => {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('accessTokenSFG'));
-
+    const authenticate = () => {
+      const token = cookies['accessTokenSFG'];
       if (!token) {
         setIsAuthenticated(false);
-        return;
+      } else {
+        setIsAuthenticated(true);
       }
-
-      axiosAuth
-        .post(``, { token }, { withCredentials: true })
-        .then((response) => {
-          const res = response.data;
-          if (res.success) {
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-            alert('비정상적인 접근입니다. 다시 로그인해주세요!');
-          }
-        })
-        .catch((err) => {
-          setIsAuthenticated(false);
-          alert(
-            '로그인 상태 확인 중 에러가 발생했습니다. 다시 로그인해주세요!'
-          );
-        });
     };
     authenticate();
-  }, []);
+  }, [cookies]);
 
   useEffect(() => {
     if (isAuthenticated === false) {

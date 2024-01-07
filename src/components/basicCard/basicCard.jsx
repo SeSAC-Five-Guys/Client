@@ -10,18 +10,35 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 
 import { userInfoState } from '../../recoil/atoms';
-
+import { axiosAuth } from '../../apis';
+import axios from 'axios';
 export default function BasicCard() {
   const navigate = useNavigate();
 
   const theme = useTheme();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
-
   const handleLogout = async () => {
-    // 성공한 경우
-    setUserInfo({ nickname: '', email: '', phone: '' });
-    navigate('/');
+    axiosAuth
+      .delete(`authentication/member`, { withCredentials: true })
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setUserInfo({ nickname: '', email: '', phone: '' });
+          alert('로그 아웃~!');
+          navigate('/');
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data;
+        if (res.errorStatus == 'ACCESS_TOKEN_ERROR') {
+          alert('로그인이 이미 만료 되었습니다.');
+          setUserInfo({ nickname: '', email: '', phone: '' });
+          navigate('/');
+        } else {
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+        }
+      });
   };
 
   return (

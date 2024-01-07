@@ -6,8 +6,20 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Header from '../../components/header';
 import ItemIcon from '../../components/itemIcon';
 import BasicCard from '../../components/basicCard/basicCard';
+import { useEffect } from 'react';
+import { axiosAuth } from '../../apis';
+import { useCookies } from 'react-cookie';
 
 export default function Main() {
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+  useEffect(() => {
+    axiosAuth
+      .get(`authorization/all/member`, { withCredentials: true })
+      .catch(() => {
+        alert('로그인 정보가 만료 되었습니다.');
+        removeCookie('accessTokenSFG');
+      });
+  }, []);
   return (
     <Container maxWidth="xl">
       <Header />

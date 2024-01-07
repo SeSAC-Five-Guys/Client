@@ -13,11 +13,23 @@ import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
+import { axiosAuth } from '../../apis';
 import { axiosWrite } from '../../apis';
 import { userInfoState } from '../../recoil/atoms';
+import { useCookies } from 'react-cookie';
+import { useEffect } from 'react';
 
 export default function Modify() {
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+  useEffect(() => {
+    axiosAuth
+      .get(`authorization/all/member`, { withCredentials: true })
+      .catch(() => {
+        alert('로그인 정보가 만료 되었습니다.');
+        removeCookie('accessTokenSFG');
+      });
+  }, []);
+
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -58,44 +70,44 @@ export default function Modify() {
 
   const checkDuplicateNickname = async () => {
     axiosWrite
-      .get(`members/nickname/${inputData.nickname}`, {
+      .get(`members/nickname/${userInfo.nickname}/${inputData.nickname}`, {
         withCredentials: true,
       })
       .then((response) => {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
-          alert('닉네임 중복 확인 완료.');
+          alert('변경 가능한 닉네임 입니다.');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'DUPLICATE_NICKNAME') {
-          alert('이미 존재하는 닉네임이다 닝겐.');
+          alert('이미 존재하는 닉네임입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.');
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
         }
       });
   };
 
   const checkDuplicatePhone = async () => {
     axiosWrite
-      .get(`members/phone_number/${inputData.phone}`, {
+      .get(`members/phone_number/${userInfo.phone}/${inputData.phone}`, {
         withCredentials: true,
       })
       .then((response) => {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
-          alert('핸드폰 번호 중복 확인 완료.');
+          alert('변경 가능한 핸드폰 번호입니다.');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'DUPLICATE_PHONENUMBER') {
-          alert('이미 존재하는 핸드폰 번호다 닝겐.');
+          alert('이미 존재하는 핸드폰 번호입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의해라 닝겐.');
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
         }
       });
   };
@@ -120,34 +132,36 @@ export default function Modify() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // 중복 확인 버튼 눌렀는지 확인
-    // if (!isChecked.nickname || !isChecked.phone) {
-    //   alert('중복확인 버튼을 눌러주세요!');
-    //   return;
-    // }
+    if (!isChecked.nickname || !isChecked.phone) {
+      alert('중복확인 버튼을 눌러주세요!');
+    }
 
-    // 중복 확인?
+    axiosWrite
+      .put(
+        `members/member/${userInfo.email}`,
+        {
+          phoneNumber: inputData.phone,
+          nickname: inputData.nickname,
+        },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setUserInfo((userInfo) => ({
+            ...userInfo,
+            nickname: inputData.nickname,
+            phone: inputData.phone,
+          }));
+        }
 
-    // 데이터 업데이트
-    // axiosWrite
-    //   .post('', {
-    //     nickname: inputData.nickname,
-    //     phone: inputData.phone,
-    //   })
-    //   .then((res) => {
-    //     // 성공하면 응답 값으로 업데이트
-    //     setUserInfo((userInfo) => ({
-    //       ...userInfo,
-    //       nickname: '',
-    //       phone: '',
-    //     }));
-    //     // 다시 로그인
-    //     alert('변경된 정보로 다시 로그인해주세요!');
-    //     navigate('/');
-    //   })
-    //   .catch((e) => {
-    //     alert('이메일 또는 비밀번호를 확인해주세요!');
-    //   });
+        // 다시 로그인
+        alert('회원 정보 변경 완료.');
+        navigate('/main');
+      })
+      .catch((e) => {
+        alert('이메일 또는 비밀번호를 확인해주세요!');
+      });
   };
 
   const renderForm = (
