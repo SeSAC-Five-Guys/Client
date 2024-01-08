@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
@@ -15,33 +16,44 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { axiosAuth } from '../../apis';
+import BasicAlert from '../../components/basicAlert';
+
 import { userInfoState } from '../../recoil/atoms';
-import { useCookies } from 'react-cookie';
-import { useEffect } from 'react';
+import { axiosAuth } from '../../apis';
 
 export default function Login() {
-  const [, , removeCookie] = useCookies(['accessTokenSFG']);
-  useEffect(() => {
-    axiosAuth
-      .get(`authorization/all/member`, { withCredentials: true })
-      .then((response) => {
-        const res = response.data
-        if (res.success){
-          alert("이미 로그인 되어 있습니다.")
-          navigate('/main')
-        }
-      })
-      .catch(() => {
-        removeCookie('accessTokenSFG');
-      });
-  }, []);
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [inputData, setInputData] = useState({ email: '', password: '' });
   const [isValid, setIsValid] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState('info');
+  const [message, setMessage] = useState('');
+
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+
+  useEffect(() => {
+    axiosAuth
+      .get(`authorization/all/member`, { withCredentials: true })
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setOpenAlert(true);
+          setSeverity('info');
+          setMessage('이미 로그인 되어 있습니다!');
+
+          navigate('/main');
+        }
+      })
+      .catch(() => {
+        removeCookie('accessTokenSFG');
+      });
+  }, []);
+
+  const closeAlert = () => setOpenAlert(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -93,7 +105,9 @@ export default function Login() {
         }
       })
       .catch((err) => {
-        alert('이메일 또는 비밀번호를 다시 확인해주세요');
+        setOpenAlert(true);
+        setSeverity('error');
+        setMessage('이메일 또는 비밀번호를 다시 확인해주세요.');
       });
   };
 
@@ -156,6 +170,12 @@ export default function Login() {
 
   return (
     <Box sx={{ height: 1 }}>
+      <BasicAlert
+        open={openAlert}
+        handleClose={closeAlert}
+        severity={severity}
+        message={message}
+      />
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h4">Welcome!</Typography>
