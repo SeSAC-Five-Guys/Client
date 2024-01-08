@@ -12,11 +12,8 @@ const PrivateRoute = ({ children }) => {
   useEffect(() => {
     const authenticate = () => {
       const token = cookies['accessTokenSFG'];
-      if (!token) {
-        setIsAuthenticated(false);
-      } else {
-        setIsAuthenticated(true);
-      }
+      const isUserAuthenticated = !!token;
+      setIsAuthenticated(isUserAuthenticated);
     };
     authenticate();
   }, [cookies]);
