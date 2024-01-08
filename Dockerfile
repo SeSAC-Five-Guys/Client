@@ -1,5 +1,5 @@
 # base image 설정(as build 로 완료된 파일을 밑에서 사용할 수 있다.)
-FROM node:alpine as build
+FROM node:20.10.0-alpine as build
 
 # 컨테이너 내부 작업 디렉토리 설정
 WORKDIR /app
@@ -30,7 +30,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx/nginx.conf /etc/nginx/conf.d
 
 # 컨테이너의 80번 포트를 열어준다.
-EXPOSE 3000
+EXPOSE 80
 
 # nginx 서버를 실행하고 백그라운드로 동작하도록 한다.
 CMD ["nginx", "-g", "daemon off;"]
