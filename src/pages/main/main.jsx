@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -5,23 +8,41 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import Header from '../../components/header';
 import ItemIcon from '../../components/itemIcon';
-import BasicCard from '../../components/basicCard/basicCard';
-import { useEffect } from 'react';
+import BasicCard from '../../components/basicCard';
+import BasicAlert from '../../components/basicAlert';
+
 import { axiosAuth } from '../../apis';
-import { useCookies } from 'react-cookie';
 
 export default function Main() {
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState('info');
+  const [message, setMessage] = useState('');
+
   const [, , removeCookie] = useCookies(['accessTokenSFG']);
+
   useEffect(() => {
     axiosAuth
       .get(`authorization/all/member`, { withCredentials: true })
       .catch(() => {
-        alert('로그인 정보가 만료 되었습니다.');
+        setOpenAlert(true);
+        setSeverity('error');
+        setMessage('로그인 정보가 만료 되었습니다.');
+
         removeCookie('accessTokenSFG');
       });
   }, []);
+
+  const closeAlert = () => setOpenAlert(false);
+
   return (
     <Container maxWidth="xl">
+      <BasicAlert
+        open={openAlert}
+        handleClose={closeAlert}
+        severity={severity}
+        message={message}
+      />
+
       <Header />
 
       <Typography variant="h4" sx={{ mb: 5 }}>
