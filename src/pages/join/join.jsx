@@ -17,10 +17,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+import BasicAlert from '../../components/basicAlert';
+import VerifyDialog from '../../components/verifyDialog';
+
 import { userInfoState } from '../../recoil/atoms';
 import { axiosWrite } from '../../apis';
-import VerifyDialog from '../../components/verifyDialog';
-import { Code } from '@mui/icons-material';
 
 export default function Join() {
   const navigate = useNavigate();
@@ -50,6 +51,12 @@ export default function Join() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState('info');
+  const [message, setMessage] = useState('');
+
+  const closeAlert = () => setOpenAlert(false);
 
   const handleDialogClose = () => setShowDialog(false);
 
@@ -135,7 +142,10 @@ export default function Join() {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
-          alert('사용 가능한 닉네임입니다.');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('사용 가능한 닉네임입니다.');
         }
       })
       .catch((e) => {
@@ -215,6 +225,13 @@ export default function Join() {
 
   const renderForm = (
     <Box>
+      <BasicAlert
+        open={openAlert}
+        handleClose={closeAlert}
+        severity={severity}
+        message={message}
+      />
+
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
