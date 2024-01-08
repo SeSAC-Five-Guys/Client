@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -13,23 +13,14 @@ import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { axiosAuth } from '../../apis';
-import { axiosWrite } from '../../apis';
+import { useTheme } from '@mui/material/styles';
+
+import BasicAlert from '../../components/basicAlert';
+
 import { userInfoState } from '../../recoil/atoms';
-import { useCookies } from 'react-cookie';
-import { useEffect } from 'react';
+import { axiosAuth, axiosWrite } from '../../apis';
 
 export default function Modify() {
-  const [, , removeCookie] = useCookies(['accessTokenSFG']);
-  useEffect(() => {
-    axiosAuth
-      .get(`authorization/all/member`, { withCredentials: true })
-      .catch(() => {
-        alert('로그인 정보가 만료 되었습니다.');
-        removeCookie('accessTokenSFG');
-      });
-  }, []);
-
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -39,6 +30,22 @@ export default function Modify() {
   const [isValid, setIsValid] = useState({ nickname: false, phone: false });
   const [isChecked, setIsChecked] = useState({ nickname: false, phone: false });
   const [showTooltip, setShowTooltip] = useState(false);
+
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+
+  useEffect(() => {
+    axiosAuth
+      .get(`authorization/all/member`, { withCredentials: true })
+      .catch(() => {
+        setOpenAlert(true);
+        setSeverity('error');
+        setMessage('로그인 정보가 만료 되었습니다.');
+
+        removeCookie('accessTokenSFG');
+      });
+  }, []);
+
+  const closeAlert = () => setOpenAlert(false);
 
   const handleNicknameChange = (event) => {
     const validation = new RegExp(
@@ -77,15 +84,22 @@ export default function Modify() {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
-          alert('변경 가능한 닉네임 입니다.');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('변경 가능한 닉네임입니다.');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'DUPLICATE_NICKNAME') {
-          alert('이미 존재하는 닉네임입니다.');
+          etOpenAlert(true);
+          setSeverity('warning');
+          setMessage('이미 존재하는 닉네임입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
@@ -99,15 +113,22 @@ export default function Modify() {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
-          alert('변경 가능한 핸드폰 번호입니다.');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('변경 가능한 핸드폰 번호입니다.');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'DUPLICATE_PHONENUMBER') {
-          alert('이미 존재하는 핸드폰 번호입니다.');
+          setOpenAlert(true);
+          setSeverity('warning');
+          setMessage('이미 가입된 핸드폰 번호입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
@@ -133,7 +154,9 @@ export default function Modify() {
     event.preventDefault();
 
     if (!isChecked.nickname || !isChecked.phone) {
-      alert('중복확인 버튼을 눌러주세요!');
+      setOpenAlert(true);
+      setSeverity('info');
+      setMessage('중복확인 버튼을 눌러주세요!');
     }
 
     axiosWrite
@@ -154,13 +177,16 @@ export default function Modify() {
             phone: inputData.phone,
           }));
         }
+        setOpenAlert(true);
+        setSeverity('success');
+        setMessage('회원 정보 변경 완료');
 
-        // 다시 로그인
-        alert('회원 정보 변경 완료.');
         navigate('/main');
       })
       .catch((e) => {
-        alert('이메일 또는 비밀번호를 확인해주세요!');
+        setOpenAlert(true);
+        setSeverity('error');
+        setMessage('이메일 또는 비밀번호를 확인해주세요!');
       });
   };
 
@@ -247,6 +273,13 @@ export default function Modify() {
 
   return (
     <Box sx={{ height: 1 }}>
+      <BasicAlert
+        open={openAlert}
+        handleClose={closeAlert}
+        severity={severity}
+        message={message}
+      />
+
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h4" sx={{ mb: 5 }}>
