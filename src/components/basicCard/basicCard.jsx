@@ -1,5 +1,6 @@
-import { useRecoilState } from 'recoil';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -9,15 +10,24 @@ import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 
+import BasicAlert from '../../components/basicAlert';
+
 import { userInfoState } from '../../recoil/atoms';
 import { axiosAuth } from '../../apis';
-import axios from 'axios';
+
 export default function BasicCard() {
   const navigate = useNavigate();
 
   const theme = useTheme();
 
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState('info');
+  const [message, setMessage] = useState('');
+
+  const closeAlert = () => setOpenAlert(false);
+
   const handleLogout = async () => {
     axiosAuth
       .delete(`authentication/member`, { withCredentials: true })
@@ -25,18 +35,27 @@ export default function BasicCard() {
         const res = response.data;
         if (res.success) {
           setUserInfo({ nickname: '', email: '', phone: '' });
-          alert('로그 아웃~!');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('로그 아웃~!');
+
           navigate('/');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'ACCESS_TOKEN_ERROR') {
-          alert('로그인이 이미 만료 되었습니다.');
+          setOpenAlert(true);
+          setSeverity('warning');
+          setMessage('로그인이 이미 만료 되었습니다.');
+
           setUserInfo({ nickname: '', email: '', phone: '' });
           navigate('/');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
