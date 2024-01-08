@@ -203,21 +203,6 @@ export default function Join() {
 
           setShowDialog(true);
         }
-
-        axiosWrite
-          .get(`members/authentication/${inputData.email}`)
-          .then((response) => {
-            const res = response.data;
-            if (res.success) {
-              const correctCode = res.data;
-              console.log(Code, correctCode);
-            }
-          })
-          .catch((e) => {
-            setOpenAlert(true);
-            setSeverity('error');
-            setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
-          });
       })
       .catch((e) => {
         const res = e.response.data;

@@ -27,30 +27,35 @@ export default function verifyDialog({ open, close, email, showEmail }) {
   };
 
   const verifyEmailCode = async (email, code) => {
-    console.log(code);
-    showEmail();
-    close();
+    axiosWrite
+      .get(`members/authentication/${email}`)
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          const correctCode = res.data;
+          console.log(code, correctCode);
 
-    // axiosWrite
-    //   .get(``, { email: email, code: code })
-    //   .then((response) => {
-    //     const res = response.data;
-    //     if (res.success) {
-    //       setUserInfo((userInfo) => ({
-    //         ...userInfo,
-    //         email: email,
-    //       }));
-    //       // 이메일 변경 금지
-    //       showEmail();
-    //       // dialog 닫기
-    //       close();
-    //     } else {
-    //       alert('올바르지 않은 인증 번호입니다.');
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.error(`이메일 인증 번호 확인 중 에러가 발생했습니다: `, err);
-    //   });
+          setUserInfo((userInfo) => ({
+            ...userInfo,
+            email: email,
+          }));
+
+          // 이메일 변경 금지
+          showEmail();
+
+          // dialog 닫기
+          close();
+        } else {
+          setOpenAlert(true);
+          setSeverity('warn');
+          setMessage('유효하지 않은 인증번호입니다.');
+        }
+      })
+      .catch((e) => {
+        setOpenAlert(true);
+        setSeverity('error');
+        setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
+      });
   };
 
   return (
