@@ -20,6 +20,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { userInfoState } from '../../recoil/atoms';
 import { axiosWrite } from '../../apis';
 import VerifyDialog from '../../components/verifyDialog';
+import { Code } from '@mui/icons-material';
 
 export default function Join() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function Join() {
   };
 
   const handleEmailChange = (event) => {
-    const validation = new RegExp(`/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/`);
+    const validation = new RegExp(`^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$`);
     let newEmail = event.target.value;
     setInputData((inputData) => ({ ...inputData, email: newEmail }));
     setIsValid((isValid) => ({
@@ -128,38 +129,76 @@ export default function Join() {
 
   // 중복 체크
   const checkDuplicateNickname = async () => {
-    setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
+    axiosWrite
+      .get(`members/nickname/${inputData.nickname}`)
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setIsChecked((isChecked) => ({ ...isChecked, nickname: true }));
+          alert('사용 가능한 닉네임입니다.');
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data;
+        if (res.errorStatus === 'DUPLICATE_NICKNAME') {
+          alert('이미 존재하는 닉네임입니다.');
+        } else {
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+        }
+      });
   };
 
   const checkDuplicatePhone = async () => {
-    setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
+    axiosWrite
+      .get(`members/phone_number/${inputData.phone}`)
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
+          alert('사용 가능한 핸드폰 번호입니다.');
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data;
+        if (res.errorStatus === 'DUPLICATE_PHONENUMBER') {
+          alert('이미 가입된 핸드폰 번호입니다.');
+        } else {
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+        }
+      });
   };
 
-  const checkDuplicateEmail = async () => {
-    setIsChecked((isChecked) => ({ ...isChecked, email: true }));
-  };
-
-  // 이메일 인증 번호 전송
-  // 인증번호 확인은 dialog에서
-  const sendEmailVerification = async () => {
-    setShowDialog(true);
-    // // 중복 확인 실패하면 전송 X
-    // if (!checkDuplicateEmail) {
-    //   return;
-    // }
-
-    // axiosWrite
-    //   .get(``, { email: inputData.email })
-    //   .then((response) => {
-    //     const res = response.data;
-    //     if (res.success) {
-    //       // 입력 받기 위한 dialog 열기
-    //       setShowDialog(true);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.error(`이메일 인증 번호 전송 중 에러가 발생했습니다: `, err);
-    //   });
+  const checkDuplicateEmailAndSendEmailVerification = async () => {
+    axiosWrite
+      .get(`members/email/${inputData.email}`)
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          setIsChecked((isChecked) => ({ ...isChecked, email: true }));
+          alert('사용 가능한 이메일 입니다.');
+          setShowDialog(true);
+        }
+        axiosWrite
+          .get(`members/authentication/${inputData.email}`)
+          .then((response) => {
+            const res = response.data;
+            if (res.success) {
+              const correctCode = res.data;
+              console.log(Code, correctCode);
+            }
+          })
+          .catch((e) => {
+            alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          });
+      })
+      .catch((e) => {
+        const res = e.response.data;
+        if (res.errorStatus === 'DUPLICATE_EMAIL') {
+          alert('이미 가입된 이메일입니다.');
+        } else {
+          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+        }
+      });
   };
 
   const handleSubmit = async (event) => {
@@ -265,7 +304,7 @@ export default function Join() {
             variant="contained"
             color="inherit"
             disabled={!isValid.email || !showEmail}
-            onClick={sendEmailVerification}
+            onClick={checkDuplicateEmailAndSendEmailVerification}
           >
             인증
           </Button>
