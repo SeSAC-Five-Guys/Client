@@ -152,7 +152,7 @@ export default function Join() {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_NICKNAME') {
           setOpenAlert(true);
-          setSeverity('warn');
+          setSeverity('warning');
           setMessage('이미 존재하는 닉네임입니다.');
         } else {
           setOpenAlert(true);
@@ -179,7 +179,7 @@ export default function Join() {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_PHONENUMBER') {
           setOpenAlert(true);
-          setSeverity('warn');
+          setSeverity('warning');
           setMessage('이미 가입된 핸드폰 번호입니다.');
         } else {
           setOpenAlert(true);
@@ -223,7 +223,7 @@ export default function Join() {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_EMAIL') {
           setOpenAlert(true);
-          setSeverity('warn');
+          setSeverity('warning');
           setMessage('이미 가입된 이메일입니다.');
         } else {
           setOpenAlert(true);
