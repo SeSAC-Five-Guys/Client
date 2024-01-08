@@ -151,9 +151,13 @@ export default function Join() {
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_NICKNAME') {
-          alert('이미 존재하는 닉네임입니다.');
+          setOpenAlert(true);
+          setSeverity('warn');
+          setMessage('이미 존재하는 닉네임입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
@@ -165,15 +169,22 @@ export default function Join() {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, phone: true }));
-          alert('사용 가능한 핸드폰 번호입니다.');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('사용 가능한 핸드폰 번호입니다.');
         }
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_PHONENUMBER') {
-          alert('이미 가입된 핸드폰 번호입니다.');
+          setOpenAlert(true);
+          setSeverity('warn');
+          setMessage('이미 가입된 핸드폰 번호입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
@@ -185,9 +196,14 @@ export default function Join() {
         const res = response.data;
         if (res.success) {
           setIsChecked((isChecked) => ({ ...isChecked, email: true }));
-          alert('사용 가능한 이메일 입니다.');
+
+          setOpenAlert(true);
+          setSeverity('success');
+          setMessage('사용 가능한 이메일 입니다.');
+
           setShowDialog(true);
         }
+
         axiosWrite
           .get(`members/authentication/${inputData.email}`)
           .then((response) => {
@@ -198,15 +214,21 @@ export default function Join() {
             }
           })
           .catch((e) => {
-            alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+            setOpenAlert(true);
+            setSeverity('error');
+            setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
           });
       })
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus === 'DUPLICATE_EMAIL') {
-          alert('이미 가입된 이메일입니다.');
+          setOpenAlert(true);
+          setSeverity('warn');
+          setMessage('이미 가입된 이메일입니다.');
         } else {
-          alert('알 수 없는 오류, 계속되는 경우 관리자한테 문의하세요.');
+          setOpenAlert(true);
+          setSeverity('error');
+          setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
         }
       });
   };
@@ -225,13 +247,6 @@ export default function Join() {
 
   const renderForm = (
     <Box>
-      <BasicAlert
-        open={openAlert}
-        handleClose={closeAlert}
-        severity={severity}
-        message={message}
-      />
-
       <Grid container spacing={1} sx={{ mb: 3 }}>
         <Grid item xs={8}>
           <TextField
@@ -413,6 +428,13 @@ export default function Join() {
 
   return (
     <Box sx={{ height: 1 }}>
+      <BasicAlert
+        open={openAlert}
+        handleClose={closeAlert}
+        severity={severity}
+        message={message}
+      />
+
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h4" sx={{ mb: 5 }}>
