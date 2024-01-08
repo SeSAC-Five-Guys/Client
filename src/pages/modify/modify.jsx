@@ -22,16 +22,18 @@ import { axiosAuth, axiosWrite } from '../../apis';
 
 export default function Modify() {
   const navigate = useNavigate();
-
   const theme = useTheme();
-
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState('info');
+  const [message, setMessage] = useState('');
+  const [, , removeCookie] = useCookies(['accessTokenSFG']);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [inputData, setInputData] = useState({ nickname: '', phone: '' });
   const [isValid, setIsValid] = useState({ nickname: false, phone: false });
   const [isChecked, setIsChecked] = useState({ nickname: false, phone: false });
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const [, , removeCookie] = useCookies(['accessTokenSFG']);
+  
 
   useEffect(() => {
     axiosAuth
@@ -93,7 +95,7 @@ export default function Modify() {
       .catch((e) => {
         const res = e.response.data;
         if (res.errorStatus == 'DUPLICATE_NICKNAME') {
-          etOpenAlert(true);
+          setOpenAlert(true);
           setSeverity('warning');
           setMessage('이미 존재하는 닉네임입니다.');
         } else {
@@ -134,20 +136,28 @@ export default function Modify() {
   };
 
   const handleQuit = async () => {
-    // axiosWrite
-    //   .get()
-    //   .then((res) => {
-    //     // 상태 초기화
-    //     setUserInfo({
-    //       nickname: '',
-    //       phone: '',
-    //       email: '',
-    //       password: '',
-    //     });
-    //     // 로그인 화면으로 이동
-    //     navigate('/');
-    //   })
-    //   .catch((e) => {});
+    axiosWrite
+      .delete(`members/member/${userInfo.email}`, { withCredentials: true })
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          axiosAuth
+            .delete(`authentication/member`, { withCredentials: true })
+            .catch((e) => {
+              navigate('/');
+            });
+          setUserInfo({
+            nickname: '',
+            phone: '',
+            email: '',
+            password: '',
+          });
+          navigate('/');
+        }
+      })
+      .catch((e) => {
+        navigate('/');
+      });
   };
 
   const handleSubmit = async (event) => {

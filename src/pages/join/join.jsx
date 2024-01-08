@@ -25,7 +25,7 @@ import { axiosWrite } from '../../apis';
 
 export default function Join() {
   const navigate = useNavigate();
-
+  const [resCode, setResCode] = useState(null);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [inputData, setInputData] = useState({
     nickname: '',
@@ -199,25 +199,27 @@ export default function Join() {
 
           setOpenAlert(true);
           setSeverity('success');
-          setMessage('사용 가능한 이메일 입니다.');
+          setMessage('사용 가능한 이메일 입니다, 잠시만 기다려 주세요.');
 
-          setShowDialog(true);
+          axiosWrite
+            .get(`members/authentication/${inputData.email}`)
+            .then((response) => {
+              setShowDialog(true);
+              const res = response.data;
+              if (res.success) {
+                console.log(res.data.code);
+                setResCode(res.data.code);
+                closeAlert();
+              }
+            })
+            .catch((e) => {
+              setOpenAlert(true);
+              setSeverity('error');
+              setMessage(
+                '알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.'
+              );
+            });
         }
-
-        axiosWrite
-          .get(`members/authentication/${inputData.email}`)
-          .then((response) => {
-            const res = response.data;
-            if (res.success) {
-              const correctCode = res.data;
-              console.log(Code, correctCode);
-            }
-          })
-          .catch((e) => {
-            setOpenAlert(true);
-            setSeverity('error');
-            setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
-          });
       })
       .catch((e) => {
         const res = e.response.data;
@@ -235,14 +237,24 @@ export default function Join() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // 성공
-    // setUserInfo({
-    //   nickname: inputData.nickname,
-    //   phone: inputData.phone,
-    //   email: inputData.email,
-    // });
-    // navigate('/');
+    axiosWrite
+      .post(`members/member`, {
+        email: inputData.email,
+        phoneNumber: inputData.phone,
+        nickname: inputData.nickname,
+        password: inputData.password,
+      })
+      .then((response) => {
+        const res = response.data;
+        if (res.success) {
+          alert('회원가입을 완료했습니다, 로그인 해주세요.');
+          navigate('/');
+        }
+      })
+      .catch((e) => {
+        const res = e.response.data;
+        setMessage('알 수 없는 오류, 계속되는 경우 관리자에게 문의하세요.');
+      });
   };
 
   const renderForm = (
@@ -343,8 +355,8 @@ export default function Join() {
           <VerifyDialog
             open={showDialog}
             close={handleDialogClose}
-            email={inputData.email}
             showEmail={handleEmailClose}
+            resCode={resCode}
           />
         </Grid>
       </Grid>

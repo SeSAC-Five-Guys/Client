@@ -10,7 +10,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-
 import { axiosWrite } from '../../apis';
 import { userInfoState } from '../../recoil/atoms';
 
@@ -18,7 +17,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function verifyDialog({ open, close, email, showEmail }) {
+export default function verifyDialog({ open, close, showEmail, resCode }) {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [code, setCode] = useState('');
 
@@ -26,31 +25,14 @@ export default function verifyDialog({ open, close, email, showEmail }) {
     setCode(event.target.value);
   };
 
-  const verifyEmailCode = async (email, code) => {
-    console.log(code);
-    showEmail();
-    close();
-
-    // axiosWrite
-    //   .get(``, { email: email, code: code })
-    //   .then((response) => {
-    //     const res = response.data;
-    //     if (res.success) {
-    //       setUserInfo((userInfo) => ({
-    //         ...userInfo,
-    //         email: email,
-    //       }));
-    //       // 이메일 변경 금지
-    //       showEmail();
-    //       // dialog 닫기
-    //       close();
-    //     } else {
-    //       alert('올바르지 않은 인증 번호입니다.');
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.error(`이메일 인증 번호 확인 중 에러가 발생했습니다: `, err);
-    //   });
+  const verifyEmailCode = async (resCode, code, showEmail) => {
+    if (resCode === code) {
+      showEmail();
+      alert("본인 인증에 성공했습니다.")
+      close();
+    } else {
+      alert('인증코드가 올바르지 않습니다.');
+    }
   };
 
   return (
@@ -72,7 +54,7 @@ export default function verifyDialog({ open, close, email, showEmail }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={close}>취소</Button>
-          <Button onClick={() => verifyEmailCode(email, code, showEmail)}>
+          <Button onClick={() => verifyEmailCode(resCode, code, showEmail)}>
             확인
           </Button>
         </DialogActions>
