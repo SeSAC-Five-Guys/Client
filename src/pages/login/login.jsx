@@ -48,8 +48,8 @@ export default function Login() {
           navigate('/main');
         }
       })
-      .catch(() => {
-        console.log(err)
+      .catch((e) => {
+        console.log(e)
         removeCookie('accessTokenSFG');
       });
   }, []);
@@ -91,8 +91,7 @@ export default function Login() {
         {
           email: inputData.email,
           password: inputData.password,
-        },
-        { withCredentials: true }
+        }
       )
       .then((response) => {
         const res = response.data;
