@@ -207,7 +207,6 @@ export default function Join() {
               setShowDialog(true);
               const res = response.data;
               if (res.success) {
-                console.log(res.data.code);
                 setResCode(res.data.code);
                 closeAlert();
               }

@@ -58,3 +58,20 @@ jobs:
         tags: |
           ${{env.DOCKER_REGISTRY}}/${{env.DOCKER_USERNAME}}/${{env.DOCKER_IMAGENAME}}:latest
           ${{env.DOCKER_REGISTRY}}/${{env.DOCKER_USERNAME}}/${{env.DOCKER_IMAGENAME}}:${{env.TAG_NAME}}
+
+    - name: Clone CI-CD_Resource Git repository
+      uses: actions/checkout@v3
+      with:
+        repository: SeSAC-Five-Guys/CI-CD_Resource
+        path: /home/runner/work/Member_Client/Member_Client
+        token: ${{ env.GIT_TOKEN }}
+
+    - name: Update the tag in ArgoCD WebHook Git repository
+      run: |
+        cd /home/runner/work/Member_Client/Member_Client &&
+        cd BE_Application &&
+        sed -i "s|# Member_Client_.*|# Member_Client_${{ github.sha }}|" Member_Client.yaml &&
+        git config --global user.email "${{env.GIT_USER_EMAIL}}" &&
+        git config --global user.name "${{env.GIT_USER_NAME}}" &&  
+        git commit -am "🔨 change: image tag comment" &&
+        git push
